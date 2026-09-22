@@ -1180,10 +1180,6 @@
       fetchMRDataFromServer(baseApiUrl);
     });
 });
-
-// Helper function to load MR data from Server (Main PC or Local)
-function fetchMRDataFromServer(baseApiUrl) {
-  fetch(`${baseApiUrl}/api/mr-sheets?period=${encodeURIComponent(activePeriod)}`)
     .then(res => res.json())
     .then(data => {
       if (data.mrSheets && data.mrSheets.length > 0) {
@@ -1201,14 +1197,15 @@ function fetchMRDataFromServer(baseApiUrl) {
     });
 }
 
-// Yeh check karne ke liye ki custom server URL present hai ya nahi
-function customServerUrlPresent() {
-  return localStorage.getItem("CPL_CUSTOM_SERVER_URL") ? true : false;
+// Yeh ch fetch(`${baseApiUrl}/api/mr-sheets?period=${encodeURIComponent(activePeriod)}`)
+return localStorage.getItem("CPL_CUSTOM_SERVER_URL") ? true : false;
 }
 
 function checkPaymentScreen() {
-  if (urlParams.get('screen') === 'payment' || localStorage.getItem("CPL_IN_PAYMENT_SCREEN") === "true") {
-    onProceedClick();
+  if (urlP
+// Helper function to load MR data from Server (Main PC or Local)
+function fetchMRDataFromServer(baseApiUrl) {
+     onProceedClick();
   }
 }
 
@@ -1230,7 +1227,10 @@ function fetchMRDataLocal() {
       console.log("Offline mode active: Using local browser storage data for MR Sheets.");
       checkPaymentScreen();
     });
-}
+arams.get('screen') === 'payment' || localStorage.getItem("CPL_IN_PAYMENT_SCREEN") === "true") {
+eck karne ke liye ki custom server URL present hai ya nahi
+function customServerUrlPresent() {
+  }
 
 function checkPaymentScreen() {
   if (urlParams.get('screen') === 'payment' || localStorage.getItem("CPL_IN_PAYMENT_SCREEN") === "true") {
@@ -1982,13 +1982,13 @@ function saveToLocal(silent = false) {
   }
 }
 
-// SUBMIT FUNCTION (Server Sync & Green Tick Marking with Network Check)
 function submitToSever() {
   const customUrl = localStorage.getItem("CPL_CUSTOM_SERVER_URL") || '';
   const baseApiUrl = customUrl ? customUrl.replace(/\/$/, '') : '';
 
-  showAlert("Syncing with Main PC...");
+  showAlert("Submitting data to server, please wait...");
 
+  // Pehle hi true/tick nahi karenge, server confirmation ka wait karenge
   fetch(`${baseApiUrl}/api/mr-sheets`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
@@ -2001,14 +2001,13 @@ function submitToSever() {
     return res.json();
   })
   .then(() => {
-    // Jab server par successfully data chala jaye tabhi green tick lagega
+    // AB jab server se successfully save hone ka signal aa gaya, tabhi true karenge
     if (mrSheets[currentMRIndex]) {
       mrSheets[currentMRIndex].isSubmitted = true;
     }
 
     localStorage.setItem(`CPL_OFFLINE_SHEETS_${activePeriod}`, JSON.stringify({ mrSheets: mrSheets, lastIndex: currentMRIndex }));
 
-    // Server se latest data fetch karke merge karna
     return fetch(`${baseApiUrl}/api/mr-sheets?period=${encodeURIComponent(activePeriod)}`);
   })
   .then(res => res.json())
@@ -2022,17 +2021,17 @@ function submitToSever() {
       localStorage.setItem(`CPL_OFFLINE_SHEETS_${activePeriod}`, JSON.stringify({ mrSheets: mrSheets, lastIndex: currentMRIndex }));
     }
     renderTabs();
-    showAlert(`Submitted & Synced to Server successfully for ${activePeriod}! ✓`);
+    showAlert(`Successfully Submitted & Synced for ${activePeriod}! ✓`);
   })
   .catch(err => {
-    console.error("Server offline sync error:", err);
-    // Agar network ya server connect nahi hai, toh tick nahi lagega aur clear message aayega
+    console.error("Server sync error:", err);
+    // Agar beech mein error aaya ya time laga/fail hua, toh tick nahi lagega
     if (mrSheets[currentMRIndex]) {
       mrSheets[currentMRIndex].isSubmitted = false;
     }
     localStorage.setItem(`CPL_OFFLINE_SHEETS_${activePeriod}`, JSON.stringify({ mrSheets: mrSheets, lastIndex: currentMRIndex }));
     renderTabs();
-    showAlert("Please connect network! Main PC server se connection nahi ho pa raha hai.", true);
+    showAlert("Submission failed! Server se connection check karein.", true);
   });
 }
 
