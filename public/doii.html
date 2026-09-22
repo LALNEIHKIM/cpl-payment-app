@@ -1,0 +1,1122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CPL DO PART-II ORDER</title>
+  <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: Arial, Helvetica, sans-serif;
+    }
+
+    body {
+      background: #2b271d;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      padding: 8px 12px;
+      color: #000;
+      overflow: hidden;
+    }
+
+    /* TOP SINGLE-LINE APP TOOLBAR */
+    .app-toolbar {
+      background: #ffffff;
+      padding: 5px 10px;
+      border-radius: 6px;
+      display: flex;
+      flex-direction: row;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 6px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+      border: 1px solid #ccc;
+      gap: 8px;
+      flex-wrap: nowrap;
+      flex-shrink: 0;
+    }
+    .toolbar-left, .toolbar-actions {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      white-space: nowrap;
+    }
+    .btn-nav-home {
+      background: #4b6584;
+      color: #ffffff;
+      text-decoration: none;
+      font-size: 11px;
+      font-weight: 900;
+      padding: 6px 12px;
+      border-radius: 4px;
+      height: 28px;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+    }
+    .btn-tool {
+      font-size: 11px;
+      font-weight: bold;
+      padding: 5px 9px;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      color: #fff;
+      height: 28px;
+      display: inline-flex;
+      align-items: center;
+      gap: 3px;
+      white-space: nowrap;
+    }
+    .btn-auto-pull { background: #007e33; }
+    .btn-add-manual { background: #2980b9; }
+    .btn-refresh-codes { background: #d35400; }
+    .btn-edit-tool { background: #8e44ad; }
+    .btn-clear-data { background: #c0392b; }
+    .btn-export { background: #16a085; }
+    .btn-save { background: #e67e22; }
+
+    /* FULL SCREEN CLEAN CONTAINER - NO BLACK SPACE */
+    .paper-container {
+      background: #ffffff;
+      border-radius: 4px;
+      padding: 12px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.4);
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    .doc-header {
+      text-align: center;
+      margin-bottom: 8px;
+      flex-shrink: 0;
+    }
+    .doc-header h4 {
+      font-size: 12px;
+      text-decoration: underline;
+      font-weight: 900;
+      letter-spacing: 1px;
+    }
+    .doc-header h3 {
+      font-size: 13px;
+      font-weight: 900;
+      text-decoration: underline;
+      margin: 2px 0;
+    }
+    .doc-header p {
+      font-size: 10.5px;
+      font-weight: bold;
+      text-decoration: underline;
+      margin-bottom: 2px;
+    }
+    .last-code-badge {
+      font-size: 11.5px;
+      font-weight: 900;
+      text-decoration: underline;
+    }
+
+    .order-ref-row {
+      display: flex;
+      justify-content: space-between;
+      font-size: 10.5px;
+      font-weight: 900;
+      text-decoration: underline;
+      margin: 6px 0 6px 0;
+      padding: 0 4px;
+      flex-shrink: 0;
+    }
+
+    /* TABLE WRAPPER WITH STICKY HEADER & CLEAN SCROLL */
+    .table-responsive-box {
+      flex: 1;
+      overflow-y: auto;
+      border: 1px solid #000;
+      background: #fff;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 11px;
+    }
+    th, td {
+      border: 1px solid #000000;
+      padding: 4px 6px;
+      text-align: center;
+      height: 28px;
+    }
+    thead th {
+      background: #ffffff;
+      font-weight: 900;
+      text-transform: uppercase;
+      font-size: 10px;
+      position: sticky;
+      top: 0;
+      z-index: 5;
+    }
+
+    .mr-header-row td {
+      background: #f8f9fa;
+      text-align: left !important;
+      font-weight: 900;
+      font-style: italic;
+      text-decoration: underline;
+      padding: 5px 8px;
+      font-size: 11px;
+      cursor: pointer;
+    }
+    .mr-header-row.selected-header td {
+      background-color: #ffeaa7 !important;
+      border: 2px solid #d63031 !important;
+    }
+
+    tbody tr {
+      cursor: pointer;
+    }
+    tbody tr:hover {
+      background-color: #f1f7ff;
+    }
+    tbody tr.selected-row {
+      background-color: #d4e6f1 !important;
+    }
+
+    .col-left { text-align: left !important; }
+    .col-bold { font-weight: bold; }
+    .col-remark {
+      text-align: left !important;
+      font-size: 10.5px;
+      white-space: normal;
+      min-width: 250px;
+    }
+
+    /* MODALS */
+    .modal-overlay {
+      display: none;
+      position: fixed;
+      top: 0; left: 0; width: 100vw; height: 100vh;
+      background: rgba(0,0,0,0.6);
+      z-index: 200;
+      justify-content: center;
+      align-items: center;
+    }
+    .modal-box {
+      background: #ffffff;
+      border-radius: 6px;
+      padding: 18px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.5);
+    }
+    .modal-box label {
+      font-size: 11px;
+      font-weight: bold;
+      display: block;
+      margin-bottom: 2px;
+    }
+    .modal-box input, .modal-box select, .modal-box textarea {
+      width: 100%;
+      height: 32px;
+      padding: 4px 8px;
+      font-size: 12px;
+      border: 1.5px solid #2b579a;
+      border-radius: 4px;
+      outline: none;
+    }
+
+    .edit-grid-do2 {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+      max-height: 65vh;
+      overflow-y: auto;
+      padding: 10px;
+      background: #f8f9fa;
+      border-radius: 4px;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- SINGLE-LINE COMPACT TOOLBAR -->
+  <div class="app-toolbar">
+    <div class="toolbar-left">
+      <a href="/index.html?screen=payment" class="btn-nav-home">💳 PAYMENT</a>
+      <a href="/index.html" class="btn-nav-home" style="background:#576574;">🏠 HOME</a>
+    </div>
+
+    <div class="toolbar-actions">
+      <button class="btn-tool btn-auto-pull" onclick="autoPullFromPayment()">⚡ AUTO PULL FROM MR SHEETS</button>
+      <button class="btn-tool btn-add-manual" onclick="openManualModal()">➕ MANUAL</button>
+      <button class="btn-tool btn-refresh-codes" onclick="refreshAllNewCodes()" title="Re-order all New Codes sequentially (8486, 8487...)">🔄 REFRESH NEW CODES</button>
+      <button class="btn-tool btn-edit-tool" onclick="openEditModal()">✏️ EDIT FORM</button>
+      <button class="btn-tool btn-clear-data" onclick="clearAllDO2Data()">🗑️ CLEAR DATA</button>
+      <button class="btn-tool btn-save" onclick="saveDO2Local()">💾 SAVE</button>
+      <button class="btn-tool btn-export" onclick="exportDO2Excel()">📊 EXPORT DO-II EXCEL (.XLSX)</button>
+    </div>
+  </div>
+
+  <!-- OFFICIAL DO-II FORMAT PRINT AREA -->
+  <div class="paper-container">
+    <div class="doc-header">
+      <h4>RESTRICTED</h4>
+      <h3 id="doHeaderTitle">DO PART - II ORDER OF CPLs FOR THE MONTH OF SEP 2026</h3>
+      <p>BY<br>SHRI SUJIT DEBNATH, EE (CIV), OFFICER COMMANDING, 74 RCC (GREF)</p>
+      <div class="last-code-badge">(LAST CODE No.<span id="lastCodeNum">8541</span>)</div>
+    </div>
+
+    <div class="order-ref-row">
+      <span>PREVIOUS PART-II ORDER No : 01/62/CPL/2026 DATED 22 Aug 2026.</span>
+      <span id="presentOrderRef">PRESENT PART-II ORDER No : 01/63/CPL/2026 DATED ____ Sep 2026.</span>
+    </div>
+
+    <!-- TABLE WRAPPER -->
+    <div class="table-responsive-box">
+      <table>
+        <thead>
+          <tr>
+            <th style="width: 35px;">S/No</th>
+            <th style="width: 45px;">MR S/NO</th>
+            <th style="width: 55px;">CODE</th>
+            <th style="width: 55px;">NEW CODE</th>
+            <th style="width: 90px;">TRADE</th>
+            <th style="width: 180px;">NAME</th>
+            <th style="width: 180px;">FATHER'S NAME</th>
+            <th style="width: 100px;">DATE OF RECRUITMENT/<br>RE-RECRUITMENT</th>
+            <th style="width: 100px;">DATE OF DISCHARGED/<br>DIED/INJURED</th>
+            <th style="width: 90px;">DATE OF<br>TFR</th>
+            <th style="width: 100px;">DATE OF<br>UPGRADATION/<br>DOWNGRADATION</th>
+            <th style="width: 200px;">REMARKS</th>
+          </tr>
+        </thead>
+        <tbody id="do2TableBody"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- MODAL: MANUAL ENTRY -->
+  <div class="modal-overlay" id="manualModal">
+    <div class="modal-box" style="width: 480px;">
+      <h3 style="color:#2b579a; text-align:center; font-size:15px;">ADD MANUAL RECORD</h3>
+      
+      <div>
+        <label>SELECT MR HEADING / JOB NO:</label>
+        <select id="manualJobSelect" onchange="onMRSelectionChange()"></select>
+      </div>
+
+      <div>
+        <label>SEARCH EMPLOYEE (SL NO / CODE):</label>
+        <input type="text" id="manualEmpSearch" list="mrEmpOptions" placeholder="Type SL NO (e.g. 1, 24) or CODE..." oninput="onSearchInput(this.value)">
+        <datalist id="mrEmpOptions"></datalist>
+        <span id="empPreviewTag" style="font-size:11px; font-weight:bold; margin-top:2px; display:block;"></span>
+      </div>
+
+      <div>
+        <label>ENTRY TYPE:</label>
+        <select id="manualEntryType" onchange="onTypeChange()">
+          <option value="DISCHARGE">DISCHARGE</option>
+          <option value="TFR">TRANSFER (TFR)</option>
+          <option value="UPGRADE">UPGRADE / DOWNGRADE (TRADE CHANGE)</option>
+          <option value="RECRUIT">NEW RECRUITMENT</option>
+          <option value="BLANK">BLANK ROW</option>
+        </select>
+      </div>
+
+      <div id="tradeChangeRow" style="display:none;">
+        <label>NEW TRADE FORMAT (e.g. MAZ/SKD-III):</label>
+        <input type="text" id="manualTradeField" placeholder="e.g. MAZ/SKD-III">
+      </div>
+
+      <div id="dateRow">
+        <label>EVENT DATE:</label>
+        <select id="manualDate"></select>
+      </div>
+
+      <div id="timeRow">
+        <label>TIME OF EFFECT:</label>
+        <select id="manualTime">
+          <option value="(F/N)">(F/N) Forenoon</option>
+          <option value="(A/N)">(A/N) Afternoon</option>
+        </select>
+      </div>
+
+      <div style="display:flex; justify-content:flex-end; gap:10px; margin-top:8px;">
+        <button class="btn-tool" style="background:#777;" onclick="closeModal('manualModal')">CANCEL</button>
+        <button class="btn-tool" style="background:#007e33;" onclick="confirmAddManual()">ADD RECORD</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: FULL EDIT FORM -->
+  <div class="modal-overlay" id="editModal">
+    <div class="modal-box" style="width: 90%; max-width: 920px;">
+      <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid #ddd; padding-bottom:6px;">
+        <span id="editModalTitle" style="font-weight:900; color:#2b579a; font-size:15px;">EDIT RECORD</span>
+        <span style="cursor:pointer; font-weight:bold;" onclick="closeModal('editModal')">✖</span>
+      </div>
+
+      <div class="edit-grid-do2" id="editFormFields"></div>
+
+      <div style="display:flex; justify-content:space-between; align-items:center; border-top:1px solid #ddd; padding-top:8px;">
+        <div style="display:flex; gap:8px;">
+          <button class="btn-tool" style="background:#dc3545;" onclick="deleteDO2Row()">🗑️ DELETE ROW</button>
+          <button class="btn-tool" style="background:#34495e;" onclick="insertBlankRowBelow()">➕ INSERT BLANK ROW BELOW</button>
+        </div>
+
+        <div style="display:flex; gap:8px;">
+          <button class="btn-tool" style="background:#777;" onclick="closeModal('editModal')">CANCEL</button>
+          <button class="btn-tool" style="background:#27ae60;" onclick="saveEditedData()">UPDATE & APPLY</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    let masterData = [];
+    let savedMRSheets = [];
+    let do2Groups = [];
+    let selectedManualEmp = null;
+    let selectedGroupIdx = 0;
+    let selectedRowIdx = 0;
+    let activePeriod = localStorage.getItem("CPL_GLOBAL_MONTH") || "SEP 2026";
+
+    const TRADE_RANKS = ["MAZ", "MATE", "SKD-III", "SKD-II", "CPDVR", "SKD-I"];
+    const MONTH_NAMES = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+    const DATE_RANGE_OPTIONS = [];
+
+    (function generateDateOptions() {
+      for (let d = 21; d <= 31; d++) {
+        const dd = String(d).padStart(2, '0');
+        DATE_RANGE_OPTIONS.push({ val: `${dd}-Aug-2026`, label: `${dd}/08/2026` });
+      }
+      for (let d = 1; d <= 20; d++) {
+        const dd = String(d).padStart(2, '0');
+        DATE_RANGE_OPTIONS.push({ val: `${dd}-Sep-2026`, label: `${dd}/09/2026` });
+      }
+    })();
+
+    function formatToStandardDate(inputDate) {
+      if (!inputDate || inputDate === "00-00-0000" || inputDate === "-- Select Date --") return "";
+      const str = String(inputDate).trim();
+      if (str.match(/^\d{2}-[A-Za-z]{3}-\d{4}$/)) return str;
+
+      const slashParts = str.split("/");
+      if (slashParts.length === 3) {
+        const d = slashParts[0].padStart(2, '0');
+        const m = parseInt(slashParts[1], 10);
+        const y = slashParts[2];
+        const mName = MONTH_NAMES[m - 1] || 'Aug';
+        return `${d}-${mName}-${y}`;
+      }
+      return str;
+    }
+
+    function generateRemarkFormula(row) {
+      if (row.isBlank) return "";
+      
+      const code = String(row.code || '').trim();
+      const trade = String(row.trade || '').trim();
+      const recruitDate = formatToStandardDate(row.dateRecruit);
+      const dischargeDate = formatToStandardDate(row.dateDischarge);
+      const upgradeDate = formatToStandardDate(row.dateUpgrade);
+      const time = row.time || "(F/N)";
+
+      if (row.customRemark && row.customRemark.trim() !== "") {
+        return row.customRemark;
+      }
+
+      let remarksArr = [];
+
+      if (code.toUpperCase() === "NEW" || recruitDate) {
+        if (recruitDate) {
+          remarksArr.push(`Newly recruited as ${trade || 'MAZ'} w.e.f. ${recruitDate} ${time}`);
+        }
+      }
+
+      if (trade.includes("/") && upgradeDate) {
+        const parts = trade.split("/");
+        const oldTrade = parts[0].trim();
+        const newTrade = parts[1].trim();
+        const oldRank = TRADE_RANKS.indexOf(oldTrade);
+        const newRank = TRADE_RANKS.indexOf(newTrade);
+        const actionWord = (oldRank < newRank) ? "Upgraded" : "Downgraded";
+        remarksArr.push(`${actionWord} ${oldTrade} to ${newTrade} w.e.f. ${upgradeDate} ${time}`);
+      }
+
+      if (dischargeDate) {
+        remarksArr.push(`Discharged w.e.f. ${dischargeDate} ${time}`);
+      }
+
+      if (remarksArr.length > 0) {
+        return remarksArr.join(" and ");
+      }
+
+      return row.customRemark || "";
+    }
+
+    function sortGroupRows(group) {
+      group.rows.sort((a, b) => {
+        if (a.isBlank && !b.isBlank) return 1;
+        if (!a.isBlank && b.isBlank) return -1;
+        const sNoA = parseInt(a.mrSno) || 999999;
+        const sNoB = parseInt(b.mrSno) || 999999;
+        return sNoA - sNoB;
+      });
+    }
+
+    function refreshAllNewCodes(silent = false) {
+      const badgeEl = document.getElementById("lastCodeNum");
+      let baseCode = 8541;
+      
+      if (badgeEl) {
+        const headerNum = parseInt(badgeEl.innerText.trim(), 10);
+        if (!isNaN(headerNum)) baseCode = headerNum;
+      }
+
+      let maxAssignedCode = baseCode;
+      do2Groups.forEach(grp => {
+        grp.rows.forEach(r => {
+          if (!r.isBlank && r.newCode) {
+            const parsed = parseInt(r.newCode, 10);
+            if (!isNaN(parsed) && parsed > maxAssignedCode) {
+              maxAssignedCode = parsed;
+            }
+          }
+        });
+      });
+
+      let nextCounter = maxAssignedCode + 1;
+      let newlyAssignedCount = 0;
+
+      do2Groups.forEach(grp => {
+        sortGroupRows(grp);
+        grp.rows.forEach(r => {
+          if (!r.isBlank && String(r.code).toUpperCase() === "NEW") {
+            if (!r.newCode || r.newCode.trim() === "") {
+              r.newCode = String(nextCounter++);
+              newlyAssignedCount++;
+            }
+          }
+        });
+      });
+
+      renderDO2Table();
+      saveDO2Local(true);
+      if (!silent) {
+        alert(`Refresh complete! Assigned ${newlyAssignedCount} new code(s) strictly to NEW recruits.`);
+      }
+    }
+
+    window.addEventListener("DOMContentLoaded", () => {
+      // Dynamic period title update
+      const titleEl = document.getElementById("doHeaderTitle");
+      if (titleEl) titleEl.innerText = `DO PART - II ORDER OF CPLs FOR THE MONTH OF ${activePeriod}`;
+
+      const refEl = document.getElementById("presentOrderRef");
+      if (refEl) refEl.innerText = `PRESENT PART-II ORDER No : 01/63/CPL/2026 DATED ____ ${activePeriod}.`;
+
+      fetch('/api/master-data')
+        .then(res => res.json())
+        .then(res => { masterData = res.data; })
+        .catch(err => console.error("Error loading master:", err));
+
+      // Fetch period-specific data from server
+      fetch(`/api/mr-sheets?period=${encodeURIComponent(activePeriod)}`)
+        .then(res => res.json())
+        .then(data => {
+          savedMRSheets = data.mrSheets || [];
+          do2Groups = data.do2Groups || [];
+          renderDO2Table();
+        })
+        .catch(err => {
+          console.error("Error fetching shared data:", err);
+          const savedDO2 = localStorage.getItem(`CPL_SAVED_DO2_GROUPS_${activePeriod}`);
+          if (savedDO2) {
+            try { do2Groups = JSON.parse(savedDO2); } catch(e){}
+          }
+          renderDO2Table();
+        });
+    });
+
+    function autoPullFromPayment(silent = false) {
+      fetch(`/api/mr-sheets?period=${encodeURIComponent(activePeriod)}`)
+        .then(res => res.json())
+        .then(data => {
+          savedMRSheets = data.mrSheets || [];
+          processAutoPullLogic(silent);
+        })
+        .catch(err => {
+          const freshSaved = localStorage.getItem("CPL_SAVED_MR_SHEETS");
+          if (freshSaved) {
+            try { savedMRSheets = JSON.parse(freshSaved); } catch(e){}
+          }
+          processAutoPullLogic(silent);
+        });
+    }
+
+    function processAutoPullLogic(silent = false) {
+      if (!savedMRSheets || savedMRSheets.length === 0) {
+        if (!silent) alert("No Payment MR Sheets found for this period!");
+        return;
+      }
+
+      const existingRowsMap = new Map();
+      do2Groups.forEach(g => {
+        (g.rows || []).forEach(r => {
+          if (!r.isBlank && r.name) {
+            const key = `${g.mrHeading}_${r.name.trim().toLowerCase()}`;
+            existingRowsMap.set(key, r);
+          }
+        });
+      });
+
+      const newDo2Groups = [];
+
+      savedMRSheets.forEach(mr => {
+        const matchingRows = [];
+
+        (mr.rows || []).forEach((r, idx) => {
+          const colCode = String((r.rowData && r.rowData[1]) || r.code || '').trim();
+          const colTrade = String((r.rowData && r.rowData[2]) || '').trim();
+          const colName = String((r.rowData && r.rowData[3]) || r.name || '').trim();
+          const colFather = String((r.rowData && r.rowData[5]) || '').trim();
+          
+          const colEnrolmentDate = String((r.rowData && r.rowData[22]) || '').trim();
+          const colDischargeDate = String((r.rowData && r.rowData[23]) || '').trim();
+
+          const isNew = (colCode.toUpperCase() === "NEW");
+          const hasSlash = colTrade.includes("/");
+          const hasDischarge = (colDischargeDate !== "");
+
+          if (isNew || hasSlash || hasDischarge) {
+            const key = `${mr.title}_${colName.toLowerCase()}`;
+            const existingRow = existingRowsMap.get(key);
+
+            if (existingRow) {
+              if (colCode && existingRow.code !== "NEW") existingRow.code = colCode;
+              if (colDischargeDate && !existingRow.dateDischarge) existingRow.dateDischarge = colDischargeDate;
+              matchingRows.push(existingRow);
+            } else {
+              const rowObj = {
+                mrSno: idx + 1,
+                code: colCode || (isNew ? "NEW" : ""),
+                newCode: "",
+                trade: colTrade || (isNew ? "MAZ" : ""),
+                name: colName,
+                father: colFather,
+                dateRecruit: isNew ? colEnrolmentDate : "",
+                dateDischarge: colDischargeDate,
+                dateTfr: "",
+                dateUpgrade: hasSlash ? "21-Aug-2026" : "",
+                time: "(F/N)",
+                customRemark: "",
+                isManual: false
+              };
+              rowObj.remark = generateRemarkFormula(rowObj);
+              matchingRows.push(rowObj);
+            }
+          }
+        });
+
+        do2Groups.forEach(g => {
+          if (g.mrHeading === mr.title) {
+            g.rows.forEach(r => {
+              if (r.isBlank || r.isManual) {
+                if (!matchingRows.includes(r)) matchingRows.push(r);
+              }
+            });
+          }
+        });
+
+        if (matchingRows.length > 0) {
+          const grp = { mrHeading: mr.title, rows: matchingRows };
+          sortGroupRows(grp);
+          newDo2Groups.push(grp);
+        }
+      });
+
+      do2Groups = newDo2Groups;
+      renderDO2Table();
+      saveDO2Local(true);
+      if (!silent) alert("Auto-pull merged successfully!");
+    }
+
+    function renderDO2Table() {
+      const tbody = document.getElementById("do2TableBody");
+      tbody.innerHTML = "";
+      let globalSNo = 1;
+
+      if (do2Groups.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="12" style="padding:20px; color:#666;">No records for ${activePeriod}. Click '⚡ AUTO PULL FROM MR SHEETS' or '➕ MANUAL'.</td></tr>`;
+        return;
+      }
+
+      do2Groups.forEach((group, gIdx) => {
+        sortGroupRows(group);
+
+        const headTr = document.createElement("tr");
+        headTr.className = `mr-header-row ${gIdx === selectedGroupIdx ? 'selected-header' : ''}`;
+        headTr.innerHTML = `<td colspan="12">${group.mrHeading}</td>`;
+        headTr.onclick = () => {
+          selectedGroupIdx = gIdx;
+          renderDO2Table();
+        };
+        tbody.appendChild(headTr);
+
+        group.rows.forEach((r, rIdx) => {
+          if (!r.isBlank) r.remark = generateRemarkFormula(r);
+
+          const tr = document.createElement("tr");
+          if (gIdx === selectedGroupIdx && rIdx === selectedRowIdx) {
+            tr.classList.add("selected-row");
+          }
+
+          tr.onclick = (e) => {
+            e.stopPropagation();
+            selectedGroupIdx = gIdx;
+            selectedRowIdx = rIdx;
+            renderDO2Table();
+          };
+
+          tr.ondblclick = () => {
+            selectedGroupIdx = gIdx;
+            selectedRowIdx = rIdx;
+            openEditModal();
+          };
+
+          tr.innerHTML = `
+            <td class="col-bold">${r.isBlank ? '' : globalSNo++}</td>
+            <td>${r.mrSno || ''}</td>
+            <td class="col-bold">${r.code || ''}</td>
+            <td class="col-bold" style="color:#007e33;">${r.newCode || ''}</td>
+            <td class="col-bold">${r.trade || ''}</td>
+            <td class="col-left col-bold">${r.name || ''}</td>
+            <td class="col-left">${r.father || ''}</td>
+            <td>${formatToStandardDate(r.dateRecruit)}</td>
+            <td>${formatToStandardDate(r.dateDischarge)}</td>
+            <td>${formatToStandardDate(r.dateTfr)}</td>
+            <td>${formatToStandardDate(r.dateUpgrade)}</td>
+            <td class="col-remark">${r.remark || ''}</td>
+          `;
+          tbody.appendChild(tr);
+        });
+      });
+    }
+
+    function clearAllDO2Data() {
+      const conf = confirm(`Are you sure you want to clear ALL DO-II records for ${activePeriod}?`);
+      if (!conf) return;
+
+      do2Groups = [];
+      localStorage.removeItem(`CPL_SAVED_DO2_GROUPS_${activePeriod}`);
+      saveDO2Local(true);
+      renderDO2Table();
+      alert("DO-II data cleared for this period!");
+    }
+
+    function populateDropdownOptions(selectEl, selectedVal = "") {
+      selectEl.innerHTML = "";
+      
+      const defaultOpt = document.createElement("option");
+      defaultOpt.value = "";
+      defaultOpt.textContent = "-- Select Date --";
+      selectEl.appendChild(defaultOpt);
+
+      const currentStd = formatToStandardDate(selectedVal).trim();
+
+      DATE_RANGE_OPTIONS.forEach(opt => {
+        const optionEl = document.createElement("option");
+        optionEl.value = opt.val;
+        optionEl.textContent = `${opt.label} (${opt.val})`;
+        
+        if (opt.val.trim().toLowerCase() === currentStd.toLowerCase()) {
+          optionEl.selected = true;
+        }
+        selectEl.appendChild(optionEl);
+      });
+
+      if (currentStd) {
+        selectEl.value = currentStd;
+      }
+    }
+
+    function openManualModal() {
+      fetch(`/api/mr-sheets?period=${encodeURIComponent(activePeriod)}`)
+        .then(res => res.json())
+        .then(data => {
+          savedMRSheets = data.mrSheets || [];
+          setupManualModalUI();
+        })
+        .catch(err => {
+          const freshSaved = localStorage.getItem("CPL_SAVED_MR_SHEETS");
+          if (freshSaved) { try { savedMRSheets = JSON.parse(freshSaved); } catch(e){} }
+          setupManualModalUI();
+        });
+    }
+
+    function setupManualModalUI() {
+      const jobSel = document.getElementById("manualJobSelect");
+      jobSel.innerHTML = "";
+      savedMRSheets.forEach(mr => {
+        const opt = document.createElement("option");
+        opt.value = mr.title;
+        opt.innerText = mr.title;
+        jobSel.appendChild(opt);
+      });
+
+      if (do2Groups[selectedGroupIdx]) {
+        jobSel.value = do2Groups[selectedGroupIdx].mrHeading;
+      }
+
+      document.getElementById("manualEmpSearch").value = "";
+      document.getElementById("empPreviewTag").innerText = "";
+      document.getElementById("manualTradeField").value = "";
+      selectedManualEmp = null;
+
+      populateDropdownOptions(document.getElementById("manualDate"), "21-Aug-2026");
+
+      onMRSelectionChange();
+      onTypeChange();
+      document.getElementById("manualModal").style.display = "flex";
+    }
+
+    function onMRSelectionChange() {
+      const selectedMRTitle = document.getElementById("manualJobSelect").value;
+      const targetMR = savedMRSheets.find(mr => mr.title === selectedMRTitle);
+      const dl = document.getElementById("mrEmpOptions");
+      dl.innerHTML = "";
+
+      if (targetMR && targetMR.rows) {
+        targetMR.rows.forEach((r, idx) => {
+          const opt = document.createElement("option");
+          const sno = idx + 1;
+          const code = String((r.rowData && r.rowData[1]) || r.code || '').trim();
+          const name = r.name || (r.rowData && r.rowData[3]) || '';
+          opt.value = `SL:${sno} - [${code}] ${name}`;
+          dl.appendChild(opt);
+        });
+      }
+    }
+
+    function onSearchInput(val) {
+      const selectedMRTitle = document.getElementById("manualJobSelect").value;
+      const targetMR = savedMRSheets.find(mr => mr.title === selectedMRTitle);
+      const previewTag = document.getElementById("empPreviewTag");
+      selectedManualEmp = null;
+
+      if (!val || !val.trim()) {
+        previewTag.innerText = "";
+        return;
+      }
+
+      const query = val.trim().toLowerCase();
+
+      if (targetMR && targetMR.rows) {
+        if (!isNaN(query)) {
+          const targetSno = parseInt(query);
+          if (targetSno >= 1 && targetSno <= targetMR.rows.length) {
+            const matchRow = targetMR.rows[targetSno - 1];
+            selectedManualEmp = {
+              mrSno: targetSno,
+              code: String((matchRow.rowData && matchRow.rowData[1]) || matchRow.code || '').trim(),
+              name: matchRow.name || matchRow.rowData[3],
+              trade: matchRow.rowData[2],
+              father: matchRow.rowData[5]
+            };
+          }
+        }
+
+        if (!selectedManualEmp) {
+          targetMR.rows.forEach((r, idx) => {
+            const sno = idx + 1;
+            const code = String((r.rowData && r.rowData[1]) || r.code || '').toLowerCase();
+            const name = String(r.name || r.rowData[3] || '').toLowerCase();
+            const formatted = `sl:${sno} - [${code}] ${name}`;
+
+            if (code === query || formatted.includes(query) || name.includes(query)) {
+              selectedManualEmp = {
+                mrSno: sno,
+                code: String((r.rowData && r.rowData[1]) || r.code || '').trim(),
+                name: r.name || r.rowData[3],
+                trade: r.rowData[2],
+                father: r.rowData[5]
+              };
+            }
+          });
+        }
+      }
+
+      if (!selectedManualEmp) {
+        const found = masterData.find(d => d.code.toLowerCase() === query || d.name.toLowerCase().includes(query));
+        if (found) {
+          selectedManualEmp = {
+            mrSno: "",
+            code: found.code,
+            name: found.name,
+            trade: found.rowData[2],
+            father: found.rowData[5]
+          };
+        }
+      }
+
+      if (selectedManualEmp) {
+        previewTag.style.color = "#007e33";
+        previewTag.innerText = `✔ Found: SL No.${selectedManualEmp.mrSno || '-'} | ${selectedManualEmp.name} (Code: ${selectedManualEmp.code}, Trade: ${selectedManualEmp.trade})`;
+      } else {
+        previewTag.style.color = "#c0392b";
+        previewTag.innerText = `✖ No matching employee found`;
+      }
+    }
+
+    function onTypeChange() {
+      const type = document.getElementById("manualEntryType").value;
+      document.getElementById("tradeChangeRow").style.display = (type === "UPGRADE") ? "block" : "none";
+      document.getElementById("dateRow").style.display = (type === "BLANK") ? "none" : "block";
+      document.getElementById("timeRow").style.display = (type === "BLANK") ? "none" : "block";
+    }
+
+    function confirmAddManual() {
+      const heading = document.getElementById("manualJobSelect").value;
+      const type = document.getElementById("manualEntryType").value;
+      const eventDate = document.getElementById("manualDate").value;
+      const timeVal = document.getElementById("manualTime").value;
+
+      let rowObj = {};
+
+      if (type === "BLANK") {
+        rowObj = { isBlank: true, isManual: true, remark: "" };
+      } else {
+        if (!selectedManualEmp) return alert("Please enter a valid SL NO or Code to select an employee!");
+
+        let tradeVal = selectedManualEmp.trade || 'MAZ';
+        if (type === "UPGRADE") {
+          tradeVal = document.getElementById("manualTradeField").value.trim() || tradeVal;
+        }
+
+        const isRecruit = (type === "RECRUIT" || String(selectedManualEmp.code).toUpperCase() === "NEW");
+
+        rowObj = {
+          mrSno: selectedManualEmp.mrSno || "",
+          code: isRecruit ? "NEW" : selectedManualEmp.code,
+          newCode: "",
+          trade: tradeVal,
+          name: selectedManualEmp.name,
+          father: selectedManualEmp.father || '',
+          dateRecruit: isRecruit ? eventDate : "",
+          dateDischarge: (type === "DISCHARGE") ? eventDate : "",
+          dateTfr: (type === "TFR") ? eventDate : "",
+          dateUpgrade: (type === "UPGRADE") ? eventDate : "",
+          time: timeVal,
+          isManual: true
+        };
+
+        rowObj.remark = generateRemarkFormula(rowObj);
+      }
+
+      let grp = do2Groups.find(g => g.mrHeading === heading);
+      if (!grp) {
+        grp = { mrHeading: heading, rows: [] };
+        do2Groups.push(grp);
+      }
+      grp.rows.push(rowObj);
+
+      refreshAllNewCodes(true);
+      closeModal('manualModal');
+    }
+
+    function openEditModal() {
+      if (do2Groups.length === 0) return alert("No DO-II records available to edit!");
+      const row = do2Groups[selectedGroupIdx]?.rows[selectedRowIdx];
+      if (!row) return alert("Please select a row first!");
+
+      document.getElementById("editModalTitle").innerText = `EDIT RECORD - ${row.name || 'BLANK ROW'}`;
+      const grid = document.getElementById("editFormFields");
+      grid.innerHTML = "";
+
+      const fields = [
+        { label: "MR S/NO", key: "mrSno", type: "text" },
+        { label: "CODE", key: "code", type: "text" },
+        { label: "NEW CODE", key: "newCode", type: "text" },
+        { label: "TRADE", key: "trade", type: "text" },
+        { label: "NAME", key: "name", type: "text" },
+        { label: "FATHER'S NAME", key: "father", type: "text" },
+        { label: "DATE RECRUITMENT", key: "dateRecruit", type: "select_date" },
+        { label: "DATE DISCHARGED", key: "dateDischarge", type: "select_date" },
+        { label: "DATE TFR", key: "dateTfr", type: "select_date" },
+        { label: "DATE UPGRADATION", key: "dateUpgrade", type: "select_date" },
+        { label: "TIME (F/N or A/N)", key: "time", type: "select_time" },
+        { label: "REMARKS (Leave empty for Auto Formula)", key: "customRemark", type: "text", span: true }
+      ];
+
+      fields.forEach(f => {
+        const div = document.createElement("div");
+        div.style.display = "flex";
+        div.style.flexDirection = "column";
+        div.style.gap = "2px";
+        if (f.span) div.style.gridColumn = "span 2";
+
+        const currentVal = row[f.key] || (f.key === 'customRemark' ? (row.customRemark || '') : '') || '';
+
+        if (f.type === "select_date") {
+          div.innerHTML = `<label>${f.label}:</label><select id="edit_${f.key}"></select>`;
+          grid.appendChild(div);
+          populateDropdownOptions(div.querySelector("select"), currentVal);
+        } else if (f.type === "select_time") {
+          const isAN = currentVal.includes("(A/N)");
+          div.innerHTML = `
+            <label>${f.label}:</label>
+            <select id="edit_${f.key}">
+              <option value="(F/N)" ${!isAN ? 'selected' : ''}>(F/N) Forenoon</option>
+              <option value="(A/N)" ${isAN ? 'selected' : ''}>(A/N) Afternoon</option>
+            </select>
+          `;
+          grid.appendChild(div);
+        } else {
+          div.innerHTML = `
+            <label>${f.label}:</label>
+            <input type="text" id="edit_${f.key}" value="${currentVal}">
+          `;
+          grid.appendChild(div);
+        }
+      });
+
+      document.getElementById("editModal").style.display = "flex";
+    }
+
+    function saveEditedData() {
+      const row = do2Groups[selectedGroupIdx].rows[selectedRowIdx];
+      row.isBlank = false;
+
+      const keys = ["mrSno", "code", "newCode", "trade", "name", "father", "dateRecruit", "dateDischarge", "dateTfr", "dateUpgrade", "time"];
+      keys.forEach(k => {
+        const el = document.getElementById(`edit_${k}`);
+        if (el) row[k] = el.value.trim();
+      });
+
+      const customRem = document.getElementById("edit_customRemark").value.trim();
+      row.customRemark = customRem;
+      row.remark = customRem || generateRemarkFormula(row);
+
+      closeModal('editModal');
+      renderDO2Table();
+      saveDO2Local(true);
+    }
+
+    function deleteDO2Row() {
+      const target = do2Groups[selectedGroupIdx].rows[selectedRowIdx];
+      const conf = confirm(`Delete this row (${target.name || 'Blank Row'})?`);
+      if (!conf) return;
+
+      do2Groups[selectedGroupIdx].rows.splice(selectedRowIdx, 1);
+      if (do2Groups[selectedGroupIdx].rows.length === 0) {
+        do2Groups.splice(selectedGroupIdx, 1);
+      }
+
+      refreshAllNewCodes(true);
+      closeModal('editModal');
+    }
+
+    function insertBlankRowBelow() {
+      const grp = do2Groups[selectedGroupIdx];
+      grp.rows.splice(selectedRowIdx + 1, 0, { isBlank: true, isManual: true, remark: "" });
+      refreshAllNewCodes(true);
+      closeModal('editModal');
+    }
+
+    function closeModal(id) {
+      document.getElementById(id).style.display = "none";
+    }
+
+    // SERVER-SIDE SAVE FUNCTION FOR DO-II with period support
+    function saveDO2Local(silent = false) {
+      fetch(`/api/mr-sheets?period=${encodeURIComponent(activePeriod)}`)
+        .then(res => res.json())
+        .then(currentData => {
+          return fetch('/api/mr-sheets', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              mrSheets: currentData.mrSheets || [],
+              lastIndex: currentData.lastIndex || 0,
+              do2Groups: do2Groups,
+              period: activePeriod
+            })
+          });
+        })
+        .then(res => res.json())
+        .then(data => {
+          localStorage.setItem(`CPL_SAVED_DO2_GROUPS_${activePeriod}`, JSON.stringify(do2Groups));
+          if (!silent) alert(`DO-II Data successfully saved for ${activePeriod}!`);
+        })
+        .catch(err => {
+          console.error("Sync error:", err);
+          localStorage.setItem(`CPL_SAVED_DO2_GROUPS_${activePeriod}`, JSON.stringify(do2Groups));
+          if (!silent) alert("Failed to save to server, saved locally!");
+        });
+    }
+
+    function exportDO2Excel() {
+      if (do2Groups.length === 0) return alert("DO-II sheet is empty!");
+
+      const wsData = [
+        ["RESTRICTED"],
+        [`DO PART - II ORDER OF CPLs FOR THE MONTH OF ${activePeriod}`],
+        ["BY"],
+        ["SHRI SUJIT DEBNATH, EE (CIV), OFFICER COMMANDING, 74 RCC (GREF)"],
+        [],
+        ["(LAST CODE No.8541)"],
+        [],
+        ["PREVIOUS PART-II ORDER No : 01/62/CPL/2026 DATED 22 Aug 2026.", "", "", "", "", `PRESENT PART-II ORDER No : 01/63/CPL/2026 DATED ____ ${activePeriod}.`],
+        [
+          "S/No", "MR S/NO", "CODE", "NEW CODE", "TRADE", "NAME", "FATHER'S NAME",
+          "DATE OF RECRUITMENT/ RE-RECRUITMENT", "DATE OF DISCHARGED/ DIED/INJURED",
+          "DATE OF TFR", "DATE OF UPGRADATION/ DOWNGRADATION", "REMARKS"
+        ]
+      ];
+
+      let globalNo = 1;
+      do2Groups.forEach(grp => {
+        wsData.push([grp.mrHeading]);
+
+        grp.rows.forEach(r => {
+          if (r.isBlank) {
+            wsData.push([]);
+          } else {
+            wsData.push([
+              globalNo++,
+              r.mrSno,
+              r.code,
+              r.newCode,
+              r.trade,
+              r.name,
+              r.father,
+              formatToStandardDate(r.dateRecruit),
+              formatToStandardDate(r.dateDischarge),
+              formatToStandardDate(r.dateTfr),
+              formatToStandardDate(r.dateUpgrade),
+              r.remark
+            ]);
+          }
+        });
+      });
+
+      const wb = XLSX.utils.book_new();
+      const ws = XLSX.utils.aoa_to_sheet(wsData);
+
+      ws['!cols'] = [
+        { wch: 6 }, { wch: 8 }, { wch: 8 }, { wch: 10 }, { wch: 14 },
+        { wch: 24 }, { wch: 24 }, { wch: 18 }, { wch: 18 }, { wch: 14 },
+        { wch: 18 }, { wch: 55 }
+      ];
+
+      XLSX.utils.book_append_sheet(wb, ws, "DO_PART_II");
+      XLSX.writeFile(wb, `DO_PART_II_ORDER_${activePeriod.replace(/[^a-zA-Z0-9]/g, '_')}.xlsx`);
+    }
+  </script>
+</body>
+</html>

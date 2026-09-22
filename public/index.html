@@ -1,0 +1,2555 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CPL PAYMENT MAKER</title>
+  <!-- STYLED EXCEL EXPORT ENGINE -->
+  <script src="https://cdn.jsdelivr.net/npm/xlsx-js-style@1.2.0/dist/xlsx.bundle.js"></script>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: Arial, Helvetica, sans-serif;
+    }
+
+    body {
+      min-height: 100vh;
+      background-color: #f4f4f4;
+    }
+
+    /* SCREEN 1 - LANDING */
+    .period-selector-panel {
+      background: rgba(255, 255, 255, 0.9);
+      padding: 15px 20px;
+      border-radius: 6px;
+      border: 2px solid #2b579a;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      width: 340px;
+      text-align: left;
+    }
+    .period-selector-panel label {
+      font-size: 11px;
+      font-weight: bold;
+      color: #333;
+    }
+    .period-selector-panel select, .period-selector-panel input {
+      width: 100%;
+      height: 32px;
+      padding: 4px 8px;
+      font-size: 12px;
+      font-weight: bold;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+    }
+    .btn-landing-nav.disabled {
+      background: #7f8c8d !important;
+      opacity: 0.5;
+      cursor: not-allowed;
+      pointer-events: none;
+    }
+
+   #screen1 {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 20px;
+      background: linear-gradient(rgba(0, 0, 0, 0.15), rgba(0, 0, 0, 0.15)), url('https://images.unsplash.com/photo-1611657291636-c141ee8cf7ab?q=80&w=1250&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D') no-repeat center center fixed;
+      background-size: cover;
+      -webkit-font-smoothing: antialiased;
+      padding: 20px;
+    }
+
+    .title-banner {
+      background: rgba(255, 255, 255, 0.65);
+      border: 1px solid rgba(255, 255, 255, 0.8);
+      backdrop-filter: none;
+      padding: 12px 60px;
+      border-radius: 4px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+    }
+    .title-banner h1 {
+      font-size: 38px;
+      font-weight: 900;
+      color: #ed1c09;
+      text-shadow: 2px 2px 0px #0b4f24, -1px -1px 0px #a3f7bf;
+      letter-spacing: 1.5px;
+    }
+
+    .pill-orange {
+      background: linear-gradient(180deg, #f37324 0%, #c84e03 100%);
+      color: #ffffff;
+      font-size: 19px;
+      font-weight: 900;
+      padding: 9px 50px;
+      border-radius: 4px;
+      border-top: 2px solid #ffaa75;
+      border-bottom: 3px solid #833000;
+      box-shadow: 0 6px 12px rgba(0,0,0,0.4);
+      text-align: center;
+    }
+
+    /* 3-BUTTON ROW ON LANDING */
+    .landing-btn-row {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      margin-top: 8px;
+    }
+
+    .btn-landing-nav {
+      font-size: 15px;
+      font-weight: 900;
+      padding: 12px 24px;
+      border: none;
+      border-radius: 4px;
+      box-shadow: 0 6px 14px rgba(0,0,0,0.5);
+      cursor: pointer;
+      text-decoration: none;
+      display: inline-block;
+      text-align: center;
+      color: #ffffff;
+      transition: transform 0.1s;
+    }
+    .btn-landing-nav:hover {
+      transform: translateY(-2px);
+    }
+
+    .btn-inc-dec {
+      background: linear-gradient(180deg, #9b59b6 0%, #6c3483 100%);
+      border-top: 2px solid #d2b4de;
+      border-bottom: 4px solid #4a235a;
+    }
+
+    .btn-payment-main {
+      background: linear-gradient(180deg, #00c853 0%, #007e33 100%);
+      border-top: 2px solid #72ff9f;
+      border-bottom: 4px solid #004d1f;
+      font-size: 18px;
+      padding: 12px 40px;
+    }
+
+    .btn-do-ii {
+      background: linear-gradient(180deg, #3498db 0%, #1f618d 100%);
+      border-top: 2px solid #aed6f1;
+      border-bottom: 4px solid #154360;
+    }
+
+    /* SCREEN 2 */
+    #screen2 {
+      display: none;
+      height: 100vh;
+      background: #332e1d;
+      flex-direction: row;
+    }
+
+    .sidebar {
+      width: 140px;
+      min-width: 140px;
+      border-right: 2px solid #e0e0e0;
+      padding: 10px 6px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      background: #00796b;
+    }
+
+    .sidebar-top {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      overflow-y: auto;
+      max-height: 72vh;
+    }
+
+    .btn-add-mr {
+      background: linear-gradient(180deg, #fbe3d5 0%, #e2b99f 100%);
+      color: #000000;
+      font-size: 13px;
+      font-weight: 900;
+      padding: 6px 4px;
+      border-radius: 4px;
+      border-top: 1.5px solid #ffffff;
+      border-bottom: 2px solid #99745c;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+      cursor: pointer;
+      text-align: center;
+    }
+
+    .btn-mr-tab {
+      background: #ffffff;
+      color: #333333;
+      font-size: 12px;
+      font-weight: 900;
+      padding: 6px 4px;
+      border-radius: 4px;
+      border: 1.5px solid #bbb;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+      cursor: pointer;
+      text-align: center;
+      text-transform: uppercase;
+      word-break: break-all;
+    }
+    .btn-mr-tab.active {
+      background: linear-gradient(180deg, #00c853 0%, #007e33 100%);
+      color: #ffffff;
+      border-top: 1.5px solid #72ff9f;
+      border-bottom: 2.5px solid #004d1f;
+      border-left: 1px solid #007e33;
+      border-right: 1px solid #007e33;
+      box-shadow: 0 3px 6px rgba(0,0,0,0.25);
+    }
+    .btn-mr-tab.submitted {
+      border: 2px solid #27ae60 !important;
+      position: relative;
+    }
+
+    .sidebar-bottom {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      padding-top: 8px;
+      border-top: 1px solid rgba(255,255,255,0.2);
+    }
+    .btn-sidebar-fn {
+      background: linear-gradient(180deg, #1b499b 0%, #0d2857 100%);
+      color: #ffffff;
+      font-size: 12px;
+      font-weight: 900;
+      padding: 8px 4px;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      text-align: center;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.25);
+      border-top: 1px solid #5b8be0;
+      text-decoration: none;
+      display: block;
+    }
+    .btn-sidebar-letter {
+      background: linear-gradient(180deg, #d35400 0%, #a04000 100%);
+      border-top: 1px solid #f39c12;
+    }
+
+    .workspace-main {
+      flex: 1;
+      padding: 10px 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      overflow: hidden;
+    }
+
+    .main-banner {
+      background: linear-gradient(180deg, #2b579a 0%, #153465 100%);
+      color: #ffffff;
+      font-size: 16px;
+      font-weight: 900;
+      text-align: center;
+      padding: 8px;
+      border-radius: 4px;
+      border-top: 2px solid #5b8be0;
+      border-bottom: 3px solid #0a1c38;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+    }
+
+    .search-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 6px;
+      background: #f8f9fa;
+      padding: 6px 10px;
+      border-radius: 4px;
+    }
+    .search-inputs {
+      display: flex;
+      gap: 6px;
+      align-items: center;
+    }
+    .search-inputs input {
+      height: 32px;
+      padding: 4px 8px;
+      font-size: 12px;
+      font-weight: bold;
+      border: 1.5px solid #2b579a;
+      border-radius: 4px;
+      outline: none;
+      width: 150px;
+    }
+
+    .btn-page-total {
+      background: linear-gradient(180deg, #2c3e50 0%, #1a252f 100%);
+      color: #ffffff;
+      font-weight: 900;
+      font-size: 11px;
+      border: none;
+      padding: 0 10px;
+      height: 32px;
+      border-radius: 4px;
+      cursor: pointer;
+      white-space: nowrap;
+    }
+
+    /* CLICKABLE LIVE GRAND TOTAL BOX */
+    .rs-total-box {
+      background: #ffffff;
+      border: 2px solid #007e33;
+      height: 32px;
+      min-width: 120px;
+      display: flex;
+      align-items: center;
+      padding: 0 8px;
+      font-size: 13px;
+      font-weight: 900;
+      color: #000000;
+      border-radius: 4px;
+      gap: 4px;
+      white-space: nowrap;
+      cursor: pointer;
+      transition: transform 0.1s, box-shadow 0.1s;
+    }
+    .rs-total-box:hover {
+      transform: scale(1.02);
+      box-shadow: 0 2px 6px rgba(0,126,51,0.4);
+      background: #eafaf1;
+    }
+    .rs-total-box span {
+      color: #c0392b;
+      font-size: 14px;
+    }
+
+    .action-buttons {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+    }
+    .btn-action {
+      font-weight: bold;
+      font-size: 11px;
+      border: none;
+      padding: 6px 8px;
+      border-radius: 4px;
+      cursor: pointer;
+      color: #ffffff;
+      height: 32px;
+      display: flex;
+      align-items: center;
+      gap: 3px;
+      text-decoration: none;
+      white-space: nowrap;
+    }
+    .btn-save { background: #14059a; }
+    .btn-submit-sync { background: #2b579a; color: #ffffff; font-weight: 900; }
+    .btn-edit { background: #2980b9; }
+    .btn-goto-do2 { background: #3498db; }
+    .btn-goto-home { background: #2c04f7; }
+    .btn-undo-redo { background: #f53c17; }
+
+    /* TABLE */
+    .table-container {
+      flex: 1;
+      overflow: auto;
+      border: 1.5px solid #000000;
+      background: #ffffff;
+    }
+    table {
+      border-collapse: collapse;
+      font-size: 11px;
+      width: 100%;
+      white-space: nowrap;
+    }
+    th, td {
+      border: 1px solid #000000;
+      padding: 4px 8px;
+      text-align: left;
+      height: 30px;
+      max-height: 30px;
+    }
+    th {
+      background: #ffffff;
+      font-weight: bold;
+      position: sticky;
+      top: 0;
+      z-index: 2;
+      text-align: center;
+    }
+    .row-letter th {
+      font-size: 12px;
+      font-weight: 900;
+      background: #f0f0f0;
+      height: 22px;
+      padding: 2px;
+    }
+    .row-name th {
+      font-size: 10px;
+      font-weight: 800;
+      height: 30px;
+      background: #ffffff;
+      text-transform: uppercase;
+      padding: 2px;
+    }
+    tbody tr {
+      height: 30px;
+      cursor: pointer;
+    }
+    tbody tr:hover {
+      background-color: #f1f7ff;
+    }
+    tbody tr.selected-row {
+      background-color: #06f00a !important;
+    }
+    tbody tr.grand-total-row {
+      background-color: #ffffff !important;
+      font-weight: 900 !important;
+    }
+    tbody tr.grand-total-row td {
+      border-top: 1.5px solid #000 !important;
+      border-bottom: 2px solid #000 !important;
+    }
+    .td-merged-gtotal {
+      text-align: center !important;
+      font-weight: 900 !important;
+      font-size: 11.5px !important;
+      letter-spacing: 1px !important;
+      background-color: #fff3cd !important;
+      color: #000 !important;
+    }
+    .td-gtotal-amount {
+      text-align: center !important;
+      font-weight: 900 !important;
+      font-size: 12px !important;
+      color: #c0392b !important;
+      background-color: #fff3cd !important;
+    }
+    .td-gtotal-page {
+      text-align: center !important;
+      font-weight: 900 !important;
+      font-size: 12px !important;
+      color: #856404 !important;
+      background-color: #fff3cd !important;
+    }
+    tbody td {
+      font-weight: 600;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .col-center {
+      text-align: center;
+    }
+    .col-page-total {
+      background-color: #fff3cd;
+      font-weight: 900 !important;
+      color: #856404;
+      text-align: center;
+    }
+
+    .col-h {
+      width: 2.2in !important;
+      min-width: 2.2in !important;
+      max-width: 2.2in !important;
+      white-space: nowrap !important;
+      overflow: hidden !important;
+      text-overflow: ellipsis !important;
+    }
+
+    /* MODALS */
+    .modal-overlay {
+      display: none;
+      position: fixed;
+      top: 0; left: 0; width: 100vw; height: 100vh;
+      background: rgba(0,0,0,0.6);
+      z-index: 200;
+      justify-content: center;
+      align-items: center;
+    }
+    .modal-window {
+      background: #ffffff;
+      border-radius: 6px;
+      box-shadow: 0 6px 20px rgba(0,0,0,0.4);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+    .modal-header {
+      background: #2b579a;
+      color: white;
+      padding: 10px 16px;
+      font-size: 15px;
+      font-weight: bold;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .btn-modal {
+      padding: 6px 14px;
+      font-weight: bold;
+      font-size: 12px;
+      border-radius: 4px;
+      cursor: pointer;
+      border: none;
+    }
+
+    .code-by-grid {
+      display: flex;
+      gap: 9px;
+      padding: 16px;
+      height: 480px;
+      background: #f8f9fa;
+    }
+    .code-by-col:first-child {
+      flex: 0.6 !important;
+    }
+    .code-by-col:last-child {
+      flex: 1 !important;
+    }
+    .code-by-col {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+    .code-by-col label {
+      font-size: 12px;
+      font-weight: bold;
+      color: #333;
+    }
+    .code-by-col textarea {
+      flex: 1;
+      padding: 8px;
+      font-family: monospace;
+      font-size: 13px;
+      border: 1.5px solid #ccc;
+      border-radius: 4px;
+      resize: none;
+      outline: none;
+    }
+    .name-preview-box {
+      flex: 1;
+      padding: 8px;
+      background: #ffffff;
+      border: 1.5px solid #ccc;
+      border-radius: 4px;
+      overflow-y: auto;
+      font-size: 12px;
+      font-weight: bold;
+      color: #2b579a;
+      line-height: 19.5px;
+    }
+
+    .edit-grid {
+      padding: 16px;
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+      overflow-y: auto;
+      max-height: 70vh;
+      background: #f8f9fa;
+    }
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+    }
+    .form-group label {
+      font-size: 11px;
+      font-weight: bold;
+    }
+    .form-group input, .form-group textarea {
+      padding: 5px 8px;
+      font-size: 12px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+    }
+
+    /* TABLE CELLS GENERAL SETUP */
+    th, td {
+      border: 1px solid #000000;
+      padding: 4px 8px;
+      text-align: left;
+      height: 30px;
+      max-height: 30px;
+    }
+
+    th {
+      background: #ffffff;
+      font-weight: bold;
+      position: sticky;
+      top: 0;
+      z-index: 3;
+      text-align: center;
+    }
+
+    /* STICKY COLUMN 1 & 2 FIXED BORDER & BACKGROUND */
+    th:nth-child(1), td:nth-child(1),
+    th:nth-child(2), td:nth-child(2) {
+      position: sticky;
+      z-index: 2;
+      background-color: #ffffff;
+      border-right: 1px solid #000000 !important;
+    }
+    th:nth-child(1), td:nth-child(1) {
+      left: 0;
+      width: 45px;
+      min-width: 45px;
+      z-index: 4;
+    }
+    th:nth-child(2), td:nth-child(2) {
+      left: 45px;
+      width: 65px;
+      min-width: 65px;
+      z-index: 4;
+    }
+
+    /* HOVER & SELECTED ROW FIX FOR STICKY COLUMNS */
+    tbody tr:hover td:nth-child(1), 
+    tbody tr:hover td:nth-child(2) {
+      background-color: #f1f7ff !important;
+      border-right: 1px solid #000000 !important;
+    }
+    
+    tbody tr.selected-row td:nth-child(1), 
+    tbody tr.selected-row td:nth-child(2) {
+      background-color: #06f00a !important;
+      border-right: 1px solid #000000 !important;
+    }
+
+    #bulkCodeInput {
+      line-height: 19.5px !important;
+      font-size: 11px !important;
+      font-family: monospace;
+      padding: 0 4px !important;
+    }
+    #bulkDaysInput {
+      height: 380px !important;
+      padding: 8px;
+      font-size: 13px;
+      line-height: 19.5px !important;
+      font-family: monospace;
+      border: 1.5px solid #ccc;
+      border-radius: 4px;
+      outline: none;
+      resize: vertical;
+    }
+
+    /* ALERT TOAST NOTIFICATION */
+    #alertToast {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      background: #27ae60;
+      color: #ffffff;
+      padding: 10px 18px;
+      border-radius: 4px;
+      font-size: 13px;
+      font-weight: bold;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+      z-index: 9999;
+      display: none;
+      transition: opacity 0.3s ease;
+    }
+    #alertToast.error {
+      background: #c0392b;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- SCREEN 1: LANDING WITH PERIOD SELECTOR -->
+  <div id="screen1">
+    <div class="title-banner">
+      <h1>CPL PAYMENT MAKER</h1>
+    </div>
+    <div class="pill-orange">HQ 74 RCC (GREF)</div>
+    
+    <!-- PERIOD & F/Y SELECTOR PANEL -->
+    <div class="period-selector-panel">
+      <h3 style="font-size:13px; color:#2b579a; text-align:center; font-weight:900;">SELECT ACTIVE PERIOD & F/Y</h3>
+      <div>
+        <label>FINANCIAL YEAR:</label>
+        <select id="globalFY" onchange="checkPeriodSelection()">
+          <option value="2026-27">F/Y 2026-27</option>
+          <option value="2027-28">F/Y 2027-28</option>
+        </select>
+      </div>
+      <div>
+        <label>SELECT MONTH / WAGES PERIOD:</label>
+        <select id="globalMonth" onchange="checkPeriodSelection()">
+          <option value="">-- Select Month --</option>
+          <option value="SEP 2026">SEP 2026 (21 Aug 2026 to 20 Sep 2026)</option>
+          <option value="OCT 2026">OCT 2026 (21 Sep 2026 to 20 Oct 2026)</option>
+          <option value="NOV 2026">NOV 2026 (21 Oct 2026 to 20 Nov 2026)</option>
+          <option value="DEC 2026">DEC 2026 (21 Nov 2026 to 20 Dec 2026)</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="landing-btn-row">
+      <a href="/increase.html" id="navInc" class="btn-landing-nav btn-inc-dec disabled">CPL INCREASE & DECREASE</a>
+      <button id="navPay" class="btn-landing-nav btn-payment-main disabled" onclick="onProceedClick()">PAYMENT</button>
+      <a href="/doii.html" id="navDo2" class="btn-landing-nav btn-do-ii disabled">CPL DO-II</a>
+      <a href="/summary.html" id="navSum" class="btn-landing-nav disabled" style="background: linear-gradient(180deg, #e67e22 0%, #ba4a00 100%);">SUMMARY DETAILS</a>
+    </div>
+  </div>
+
+  <div id="alertToast">Success Message</div>
+
+  <!-- SCREEN 2: PAYMENT WORKSPACE -->
+  <div id="screen2" style="display:none;">
+    <div class="sidebar">
+      <div class="sidebar-top">
+        <div class="btn-add-mr" id="btnAddMrTab" onclick="openMRModal()">ADD MR +</div>
+        <div id="mrTabsContainer" style="display:flex; flex-direction:column; gap:6px;"></div>
+      </div>
+
+      <div class="sidebar-bottom">
+        <a href="/letter.html" class="btn-sidebar-fn btn-sidebar-letter">LETTER</a>
+        <button class="btn-sidebar-fn" onclick="openCodeByModal()">CODE BY</button>
+        <button class="btn-sidebar-fn" onclick="openDaysModal()">DAYS</button>
+      </div>
+    </div>
+
+    <div class="workspace-main">
+      <div class="main-banner" id="mainBanner">
+        PLEASE CREATE / SELECT AN MR SHEET
+      </div>
+
+      <div class="search-row">
+        <div class="search-inputs">
+          <input type="text" id="nameSearch" list="nameOptions" placeholder="Search NAME..." oninput="onNameSearch(this.value)">
+          <datalist id="nameOptions"></datalist>
+        </div>
+
+        <!-- PAGE TOTAL & CONNECT MAIN PC BUTTONS SIDE-BY-SIDE -->
+        <div style="display:flex; gap:6px; align-items:center;">
+          <button class="btn-page-total" onclick="openPageTotalModal()">Page-Total</button>
+          <button class="btn-action" id="btnConnectStatus" style="background: #16a085; font-weight:900; height:32px; font-size:11px;" onclick="openConnectModal()">🔗 CONNECT MAIN PC</button>  
+        </div>
+
+        <!-- CLICKABLE GRAND TOTAL INSERTION & SUBMIT BUTTON SIDE-BY-SIDE -->
+        <div style="display:flex; align-items:center; gap:8px;">
+          <div class="rs-total-box" onclick="insertGrandTotalRow()" title="Click to insert/update G/TOTAL row">
+            Rs <span id="grandTotalDisplay">0</span>
+          </div>
+          <!-- SUBMIT BUTTON -->
+          <button class="btn-action btn-submit-sync" onclick="submitToSever()" title="Submit data to server">🚀 SUBMIT</button>
+        </div>
+
+        <div class="action-buttons">
+          <button class="btn-action btn-undo-redo" onclick="undoAction()" title="Undo (Max 3 steps)">↩️ Undo</button>
+          <button class="btn-action btn-undo-redo" onclick="redoAction()" title="Redo">↪️ Redo</button>
+          <button class="btn-action btn-save" onclick="saveToLocal()" title="Save locally to browser">💾 SAVE</button>
+          <button class="btn-action btn-edit" id="btnEditRow" onclick="openEditModal()">✏️ EDIT INDL DATA</button>
+          
+          <!-- FEATURE BUTTON -->
+          <button class="btn-action" style="background: #8e44ad; font-weight:900;" onclick="openFeatureModal()">⚙️ FEATURE</button>
+
+          <a href="/doii.html" class="btn-action btn-goto-do2">📑 CPL DO-II</a>
+          <button class="btn-action btn-goto-home" onclick="goToHome()">🏠 HOME</button>
+        </div>
+      </div>
+
+      <div class="table-container">
+        <table>
+          <thead>
+            <tr class="row-letter" id="letterHead"></tr>
+            <tr class="row-name" id="nameHead"></tr>
+          </thead>
+          <tbody id="tableBody"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODALS -->
+  <div class="modal-overlay" id="mrModal">
+    <div class="modal-window" style="width: 400px; padding: 20px; gap: 12px;">
+      <h3 style="color:#2b579a; text-align:center; font-size:16px;">CREATE NEW MR SHEET</h3>
+      <div>
+        <label style="font-size:12px; font-weight:bold;">MR NUMBER:</label>
+        <input type="text" id="modalMrNo" value="MR No. 74 RCC/  / SEP 2026" style="width:100%; height:32px; padding:4px 8px; border:1.5px solid #2b579a; border-radius:4px;">
+      </div>
+      <div>
+        <label style="font-size:12px; font-weight:bold;">JOB NO SELECTION:</label>
+        <select id="modalJobSelect" style="width:100%; height:32px; border:1.5px solid #2b579a; border-radius:4px;">
+          <option value="">-- Select Job No --</option>
+          <option value="ADG (B)/ BFR Cell/ (A/A & E/S) / 2024/832 FMN">JOB No. ADG (B)/ BFR Cell/ (A/A & E/S) / 2024/832 FMN</option>
+          <option value="ADG (B)/ BFR Cell/ (A/A & E/S) / 2024/831 FMN">JOB No. ADG (B)/ BFR Cell/ (A/A & E/S) / 2024/831 FMN</option>
+          <option value="MAINT CHK ROAD (KM 0.00 TO KM 10.00) 26-27">JOB No. MAINT CHK ROAD (KM 0.00 TO KM 10.00) 26-27</option>         
+          <option value="80/515 (PSK)">JOB No. 80/515 (PSK)</option>
+          <option value="MAINT CHK 2026-27 (KM 10.00 TO 75.50)">JOB No. MAINT CHK 2026-27 (KM 10.00 TO 75.50)</option>
+          <option value="710-A/50 REHAB CHK">JOB No. 710-A/50 REHAB CHK</option>
+          <option value="710-A/52">JOB No. 710-A/52</option>
+          <option value="MAINT KVK ROAD 2026-27">JOB No. MAINT KVK ROAD 2026-27</option>
+          <option value="MAINT DVF ROAD 2026-27">JOB No. MAINT DVF ROAD 2026-27</option>
+          <option value="MAINT FT ROAD 2026-27">JOB No. MAINT FT ROAD 2026-27</option>
+          <option value="MAINT NVT ROAD 2026-27">JOB No. MAINT NVT ROAD 2026-27</option>
+          <option value="L-3307/07 PMT TBSPS ROAD">JOB No. L-3307/07 PMT TBSPS ROAD</option>
+          <option value="L-3307/07 SURF TBSPS ROAD">JOB No. L-3307/07 SURF TBSPS ROAD</option>
+          <option value="L-3307/10 FMN TBSPS ROAD">JOB No. L-3307/10 FMN TBSPS ROAD</option>
+          <option value="L-3307/10 PMT TBSPS ROAD">JOB No. L-3307/10 PMT TBSPS ROAD</option>
+          <option value="MAINT S-T ROAD 2026-27 (KM 82.00 TO 164.53)">JOB No. MAINT S-T ROAD 2026-27 (KM 82.00 TO 164.53)</option>
+          <option value="JOB No. 709/157 FMN ON S-T ROAD">JOB No. 709/157 FMN ON S-T ROAD</option>
+          <option value="MAINTENANCE KDA ROAD 2026-27">JOB No. MAINTENANCE KDA ROAD 2026-27</option>
+          <option value="MAINT S-T ROAD 2026-27 (KM 31.12 TO 42.00)">JOB No. MAINT S-T ROAD 2026-27 (KM 31.12 TO 42.00)</option>
+          <option value="ADG (B)/ BFR Cell/ (A/A & E/S) / 2024/832 FMN">JOB No. ADG (B)/ BFR Cell/ (A/A & E/S) / 2024/832 FMN</option>
+          <option value="ADG (B)/ BFR Cell/ (A/A & E/S) / 2024/832 SURF">JOB No. MAINT S-T ROAD 2026-27 (KM 82.00 TO 164.53)</option>
+          <option value="ADG (B)/ BFR Cell/ (A/A & E/S) / 2024/831 SURF">JOB No. MAINT S-T ROAD 2026-27 (KM 82.00 TO 164.53)</option>
+        </select>
+      </div>
+      <div style="display:flex; justify-content:flex-end; gap:10px; margin-top:10px;">
+        <button class="btn-modal" style="background:#666; color:white;" onclick="closeModal('mrModal')">CANCEL</button>
+        <button class="btn-modal" style="background:#007e33; color:white;" onclick="confirmAddMR()">CREATE</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- FEATURE MENU MODAL -->
+  <div class="modal-overlay" id="featureModal">
+    <div class="modal-window" style="width: 320px; padding: 20px; gap: 12px;">
+      <h3 style="color:#2b579a; text-align:center; font-size:15px; font-weight:900;">⚙️ MR & SHEET FEATURES</h3>
+      <div style="display:flex; flex-direction:column; gap:8px; margin-top:5px;">
+        <button class="btn-modal" style="background:#c0392b; color:white; height:36px; font-size:12px;" onclick="closeModal('featureModal'); deleteCurrentMR();">🗑️ DELETE MR SHEET</button>
+        <button class="btn-modal" style="background:#27ae60; color:white; height:36px; font-size:12px;" onclick="closeModal('featureModal'); exportSingleExcel();">📊 EXPORT CURRENT MR</button>
+        <button class="btn-modal" style="background:#00796b; color:white; height:36px; font-size:12px;" onclick="closeModal('featureModal'); exportAllWorkbook();">📑 EXPORT ALL WORKBOOK</button>
+        <button class="btn-modal" style="background:#8e44ad; color:white; height:36px; font-size:12px;" onclick="closeModal('featureModal'); toggleMRLock();"><span id="featureLockText">🔒 LOCK / UNLOCK MR</span></button>
+      </div>
+      <div style="display:flex; justify-content:flex-end; margin-top:10px;">
+        <button class="btn-modal" style="background:#666; color:white;" onclick="closeModal('featureModal')">CLOSE</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- CONNECT MAIN PC MODAL -->
+  <div class="modal-overlay" id="connectModal">
+    <div class="modal-window" style="width: 380px; padding: 20px; gap: 12px;">
+      <h3 style="color:#2b579a; text-align:center; font-size:15px; font-weight:900;">🔗 CONNECT TO MAIN PC / SERVER</h3>
+      <div>
+        <label style="font-size:11px; font-weight:bold;">SERVER / DEV TUNNEL URL:</label>
+        <input type="text" id="serverUrlInput" value="" placeholder="e.g. https://c1pd30dq-4000.inc1.devtunnels.ms/" style="width:100%; height:32px; padding:4px 8px; border:1.5px solid #2b579a; border-radius:4px; font-size:11px;">
+      </div>
+      <div style="font-size:11px; color:#555; line-height:1.4;">
+        <i>Aap 1st PC ka Dev Tunnel link ya Local IP yahan enter karke 2nd PC से direct Main PC server ke sath data sync aur access kar sakte hain.</i>
+      </div>
+      <div style="display:flex; justify-content:flex-end; gap:10px; margin-top:10px;">
+        <button class="btn-modal" style="background:#666; color:white;" onclick="closeModal('connectModal')">CANCEL</button>
+        <button class="btn-modal" style="background:#007e33; color:white;" onclick="saveAndTestConnection()">CONNECT & TEST</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal-overlay" id="pageTotalModal">
+    <div class="modal-window" style="width: 380px;">
+      <div class="modal-header">
+        <span>CALCULATE PAGE TOTAL (COL U)</span>
+        <span style="cursor:pointer;" onclick="closeModal('pageTotalModal')">✖</span>
+      </div>
+      <div style="padding:16px; background:#f8f9fa; display:flex; flex-direction:column; gap:12px;">
+        <div>
+          <label style="font-size:12px; font-weight:bold;">FROM S/NO:</label>
+          <input type="number" id="pageTotalStart" value="1" style="width:100%; height:32px; padding:4px 8px; border:1.5px solid #2b579a; border-radius:4px;">
+        </div>
+        <div>
+          <label style="font-size:12px; font-weight:bold;">TO S/NO:</label>
+          <input type="number" id="pageTotalEnd" value="20" style="width:100%; height:32px; padding:4px 8px; border:1.5px solid #2b579a; border-radius:4px;">
+        </div>
+      </div>
+      <div style="padding: 10px 16px; background:#fff; border-top:1px solid #ddd; display:flex; justify-content:flex-end; gap:10px;">
+        <button class="btn-modal" style="background:#888; color:white;" onclick="closeModal('pageTotalModal')">CANCEL</button>
+        <button class="btn-modal" style="background:#007e33; color:white;" onclick="applyPageTotal()">CALCULATE & APPLY</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal-overlay" id="codeByModal">
+    <div class="modal-window" style="width: 580px;">
+      <div class="modal-header">
+        <span>BULK IMPORT BY CODES</span>
+        <span style="cursor:pointer;" onclick="closeModal('codeByModal')">✖</span>
+      </div>
+      <div style="padding: 10px 16px 0 16px; background: #f8f9fa; display: flex; gap: 10px; align-items: center;">
+        <div style="flex:1;">
+          <label style="font-size:11px; font-weight:bold;">START S/NO (Optional - Leave blank to append below):</label>
+          <input type="number" id="codeStartNo" value="" placeholder="e.g. 5 (Leave blank for normal)" oninput="previewBulkCodes()" style="width:100%; height:30px; padding:4px 8px; border:1.5px solid #ccc; border-radius:4px;">
+        </div>
+      </div>
+      <div class="code-by-grid">
+        <div class="code-by-col">
+          <label>PASTE CODES (COLUMN A):</label>
+          <textarea id="bulkCodeInput" placeholder="Paste codes here (one per line)..." oninput="previewBulkCodes()"></textarea>
+        </div>
+        <div class="code-by-col">
+          <label>MATCHED NAMES (COLUMN B):</label>
+          <div class="name-preview-box" id="bulkNamePreview">
+            <i>Names will appear here as you paste codes...</i>
+          </div>
+        </div>
+      </div>
+      <div style="padding: 12px 16px; background:#fff; border-top:1px solid #ddd; display:flex; justify-content:flex-end; gap:10px;">
+        <button class="btn-modal" style="background:#888; color:white;" onclick="closeModal('codeByModal')">CANCEL</button>
+        <button class="btn-modal" style="background:#27ae60; color:white;" onclick="applyBulkCodes()">➕ ADD ALL TO SHEET</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal-overlay" id="daysModal">
+    <div class="modal-window" style="width: 520px;">
+      <div class="modal-header">
+        <span>BULK PASTE WORKING DAYS (COL R)</span>
+        <span style="cursor:pointer;" onclick="closeModal('daysModal')">✖</span>
+      </div>
+      <div style="padding:16px; background:#f8f9fa; display:flex; flex-direction:column; gap:10px;">
+        <div style="display:flex; gap:10px;">
+          <div style="flex:1;">
+            <label style="font-size:11px; font-weight:bold;">FROM S/NO:</label>
+            <input type="number" id="daysStartNo" value="1" oninput="updateDaysHelper(); previewBulkDays();" style="width:100%; height:30px; padding:4px 8px; border:1.5px solid #ccc; border-radius:4px;">
+          </div>
+          <div style="flex:1;">
+            <label style="font-size:11px; font-weight:bold;">TO S/NO:</label>
+            <input type="number" id="daysEndNo" value="20" oninput="updateDaysHelper()" style="width:100%; height:30px; padding:4px 8px; border:1.5px solid #ccc; border-radius:4px;">
+          </div>
+        </div>
+        <div>
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 3px;">
+            <label style="font-size:11px; font-weight:bold;">PASTE DAYS (Line by line or Comma separated):</label>
+            <span id="daysRangeHelper" style="font-size: 10.5px; font-weight: bold; color: #2b579a; background: #eef2f7; padding: 2px 6px; border-radius: 3px;">Target: S/No 1 to 20</span>
+          </div>
+          <div style="display: flex; gap: 8px;">
+            <!-- S/No Column next to textarea -->
+            <div id="daysSNoList" style="width: 45px; background: #fff; border: 1.5px solid #ccc; border-radius: 4px; padding: 8px 2px; font-family: monospace; font-size: 13px; color: #666; text-align: right; line-height: 19.5px; height: 380px; overflow: hidden; user-select: none;">
+              1.
+            </div>
+            <textarea id="bulkDaysInput" placeholder="31&#10;31&#10;25&#10;28&#10;..." oninput="previewBulkDays()" onscroll="document.getElementById('daysSNoList').scrollTop = this.scrollTop;" style="flex: 1;"></textarea>
+          </div>
+        </div>
+      </div>
+      <div style="padding: 10px 16px; background:#fff; border-top:1px solid #ddd; display:flex; justify-content:flex-end; gap:10px;">
+        <button class="btn-modal" style="background:#888; color:white;" onclick="closeModal('daysModal')">CANCEL</button>
+        <button class="btn-modal" style="background:#2b579a; color:white;" onclick="applyBulkDays()">APPLY TO COL R</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal-overlay" id="editModal">
+    <div class="modal-window" style="width: 90%; max-width: 950px;">
+      <div class="modal-header">
+        <span id="editModalTitle">EDIT EMPLOYEE RECORD</span>
+        <span style="cursor:pointer;" onclick="closeModal('editModal')">✖</span>
+      </div>
+      <div class="edit-grid" id="editFormFields"></div>
+      <div style="padding: 10px 16px; background:#fff; border-top:1px solid #ddd; display:flex; justify-content:space-between; align-items:center;">
+        <button class="btn-modal" style="background:#dc3545; color:white;" onclick="deleteCurrentRow()">🗑️ DELETE ROW</button>
+        <div style="display:flex; gap:10px;">
+          <button class="btn-modal" style="background:#34495e; color:white;" onclick="insertBlankRowBelow()">➕ INSERT BLANK ROW BELOW</button>
+          <button class="btn-modal" style="background:#888; color:white;" onclick="closeModal('editModal')">CANCEL</button>
+          <button class="btn-modal" style="background:#27ae60; color:white;" onclick="saveEditedData()">UPDATE & APPLY</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function checkPeriodSelection() {
+      const fy = document.getElementById("globalFY").value;
+      const month = document.getElementById("globalMonth").value;
+      
+      const navInc = document.getElementById("navInc");
+      const navPay = document.getElementById("navPay");
+      const navDo2 = document.getElementById("navDo2");
+      const navSum = document.getElementById("navSum");
+
+      if (fy && month) {
+        navInc.classList.remove("disabled");
+        navPay.classList.remove("disabled");
+        navDo2.classList.remove("disabled");
+        navSum.classList.remove("disabled");
+
+        localStorage.setItem("CPL_GLOBAL_FY", fy);
+        localStorage.setItem("CPL_GLOBAL_MONTH", month);
+      } else {
+        navInc.classList.add("disabled");
+        navPay.classList.add("disabled");
+        navDo2.classList.add("disabled");
+        navSum.classList.add("disabled");
+      }
+    }
+
+    function showAlert(message, isError = false) {
+      const toast = document.getElementById("alertToast");
+      toast.innerText = message;
+      toast.className = isError ? "error" : "";
+      toast.style.display = "block";
+      
+      setTimeout(() => {
+        toast.style.display = "none";
+      }, 3000);
+    }
+
+    let masterData = [];
+    let masterHeaders = [];
+    let mrSheets = [];
+    let currentMRIndex = 0;
+    let selectedRowIdx = 0;
+    let activePeriod = localStorage.getItem("CPL_GLOBAL_MONTH") || "SEP 2026";
+
+    let undoStack = [];
+    let redoStack = [];
+    const MAX_UNDO = 3;
+
+    function saveStateForHistory() {
+      if (!mrSheets[currentMRIndex]) return;
+      const currentState = JSON.parse(JSON.stringify(mrSheets[currentMRIndex].rows));
+      undoStack.push(currentState);
+      if (undoStack.length > MAX_UNDO) {
+        undoStack.shift();
+      }
+      redoStack = [];
+    }
+
+    function undoAction() {
+      if (undoStack.length === 0) {
+        showAlert("Kuch bhi undo karne ke liye nahi hai!", true);
+        return;
+      }
+      const currentState = JSON.parse(JSON.stringify(mrSheets[currentMRIndex].rows));
+      redoStack.push(currentState);
+      
+      const previousState = undoStack.pop();
+      mrSheets[currentMRIndex].rows = previousState;
+      renderBody();
+      saveToLocal(true);
+      showAlert("Undo successful!");
+    }
+
+    function redoAction() {
+      if (redoStack.length === 0) {
+        showAlert("Kuch bhi redo karne ke liye nahi hai!", true);
+        return;
+      }
+      const currentState = JSON.parse(JSON.stringify(mrSheets[currentMRIndex].rows));
+      undoStack.push(currentState);
+      
+      const nextState = redoStack.pop();
+      mrSheets[currentMRIndex].rows = nextState;
+      renderBody();
+      saveToLocal(true);
+      showAlert("Redo successful!");
+    }
+
+    const urlParams = new URLSearchParams(window.location.search);
+    const isAdmin = urlParams.get('admin') === 'true';
+
+    const borderStyleThin = {
+      top: { style: "thin", color: { rgb: "000000" } },
+      bottom: { style: "thin", color: { rgb: "000000" } },
+      left: { style: "thin", color: { rgb: "000000" } },
+      right: { style: "thin", color: { rgb: "000000" } }
+    };
+
+    function calculateRateByTrade(tradeVal) {
+      if (!tradeVal) return "";
+      const t = String(tradeVal).trim().toUpperCase();
+      if (t.endsWith("MAZ")) return "550";
+      if (t.endsWith("MATE")) return "570";
+      if (t.endsWith("SKD-III")) return "640";
+      if (t.endsWith("SKD-II")) return "770";
+      if (t.endsWith("SKD-I")) return "900";
+      if (t.endsWith("CPDVR")) return "770";
+      return "550";
+    }
+
+    function numberToIndianWords(num) {
+      const a = ['', 'One ', 'Two ', 'Three ', 'Four ', 'Five ', 'Six ', 'Seven ', 'Eight ', 'Nine ', 'Ten ', 'Eleven ', 'Twelve ', 'Thirteen ', 'Fourteen ', 'Fifteen ', 'Sixteen ', 'Seventeen ', 'Eighteen ', 'Nineteen '];
+      const b = ['', '', 'Twenty', 'Thirty', 'Forty', 'Fifty', 'Sixty', 'Seventy', 'Eighty', 'Ninety'];
+
+      function inWords(n) {
+        let str = "";
+        if (n > 99) {
+          str += a[Math.floor(n / 100)] + "Hundred ";
+          n %= 100;
+        }
+        if (n > 19) {
+          str += b[Math.floor(n / 10)] + " " + a[n % 10];
+        } else {
+          str += a[n];
+        }
+        return str.trim();
+      }
+
+      num = Math.floor(Number(num) || 0);
+      if (num === 0) return "Rupees Zero Only";
+
+      let crore = Math.floor(num / 10000000);
+      num %= 10000000;
+      let lakh = Math.floor(num / 100000);
+      num %= 100000;
+      let thousand = Math.floor(num / 1000);
+      num %= 1000;
+      let rem = num;
+
+      let result = "Rupees ";
+      if (crore > 0) result += inWords(crore) + " Crore ";
+      if (lakh > 0) result += inWords(lakh) + " Lakh ";
+      if (thousand > 0) result += inWords(thousand) + " Thousand ";
+      if (rem > 0) result += inWords(rem) + " ";
+
+      result = result.replace(/\s+/g, ' ').trim() + " Only";
+      return result;
+    }
+
+    function numberToWordSimple(num) {
+      const ones = ['', 'ONE', 'TWO', 'THREE', 'FOUR', 'FIVE', 'SIX', 'SEVEN', 'EIGHT', 'NINE', 'TEN', 'ELEVEN', 'TWELVE', 'THIRTEEN', 'FOURTEEN', 'FIFTEEN', 'SIXTEEN', 'SEVENTEEN', 'EIGHTEEN', 'NINETEEN'];
+      const tens = ['', '', 'TWENTY', 'THIRTY', 'FORTY', 'FIFTY', 'SIXTY', 'SEVENTY', 'EIGHTY', 'NINETY'];
+
+      num = parseInt(num, 10) || 0;
+      if (num === 0) return "ZERO";
+      if (num < 20) return ones[num];
+      if (num < 100) return (tens[Math.floor(num / 10)] + " " + ones[num % 10]).trim();
+      return String(num);
+    }
+
+    window.addEventListener("DOMContentLoaded", () => {
+  // 1. Saved FY aur Month ko dropdown mein wapas set karna taaki khali na dikhe
+  const savedFY = localStorage.getItem("CPL_GLOBAL_FY");
+  const savedMonth = localStorage.getItem("CPL_GLOBAL_MONTH");
+  
+  if (savedFY) {
+    const fyEl = document.getElementById("globalFY");
+    if (fyEl) fyEl.value = savedFY;
+  }
+  if (savedMonth) {
+    const monthEl = document.getElementById("globalMonth");
+    if (monthEl) monthEl.value = savedMonth;
+    activePeriod = savedMonth;
+    checkPeriodSelection();
+  }
+
+  // 2. F5 refresh marte hi turant Payment screen par rokne ka logic (No flicker, No Screen 1)
+  if (localStorage.getItem("CPL_IN_PAYMENT_SCREEN") === "true" && savedMonth) {
+    document.getElementById("screen1").style.display = "none";
+    document.getElementById("screen2").style.display = "flex";
+    renderHeaders();
+  }
+
+  // 3. Load Offline MR Sheets
+  const localData = localStorage.getItem(`CPL_OFFLINE_SHEETS_${activePeriod}`);
+  if (localData) {
+    try {
+      const parsed = JSON.parse(localData);
+      if (parsed.mrSheets && parsed.mrSheets.length > 0) {
+        mrSheets = parsed.mrSheets;
+        currentMRIndex = parsed.lastIndex || 0;
+      }
+    } catch(e) {}
+  }
+
+  // 4. Load Offline Master Data
+  const savedMaster = localStorage.getItem('CPL_OFFLINE_MASTER_DATA');
+  if (savedMaster) {
+    try {
+      const parsedMaster = JSON.parse(savedMaster);
+      masterHeaders = parsedMaster.headers || [];
+      masterData = parsedMaster.data || [];
+      populateDatalists();
+    } catch(e) {}
+  }
+
+  // 5. Background mein Server se Data Sync karna
+  const customServerUrl = localStorage.getItem("CPL_CUSTOM_SERVER_URL");
+  const baseApiUrl = customServerUrl ? customServerUrl.replace(/\/$/, '') : '';
+
+  fetch(`${baseApiUrl}/api/master-data`)
+    .then(res => res.json())
+    .then(res => {
+      if (res.data && res.data.length > 0) {
+        masterHeaders = res.headers;
+        masterData = res.data;
+        localStorage.setItem('CPL_OFFLINE_MASTER_DATA', JSON.stringify({ headers: masterHeaders, data: masterData }));
+        populateDatalists();
+      }
+      fetchMRDataFromServer(baseApiUrl);
+    })
+    .catch(err => {
+      console.log("Offline mode active: Using local browser storage data for Master List.");
+      fetchMRDataFromServer(baseApiUrl);
+    });
+});
+
+// Helper function to load MR data from Server (Main PC or Local)
+function fetchMRDataFromServer(baseApiUrl) {
+  fetch(`${baseApiUrl}/api/mr-sheets?period=${encodeURIComponent(activePeriod)}`)
+    .then(res => res.json())
+    .then(data => {
+      if (data.mrSheets && data.mrSheets.length > 0) {
+        if (mrSheets.length === 0 || customServerUrlPresent()) {
+          mrSheets = data.mrSheets;
+          currentMRIndex = data.lastIndex || 0;
+          localStorage.setItem(`CPL_OFFLINE_SHEETS_${activePeriod}`, JSON.stringify({ mrSheets: mrSheets, lastIndex: currentMRIndex }));
+        }
+      }
+      checkPaymentScreen();
+    })
+    .catch(err => {
+      console.log("Offline mode active: Using local browser storage data for MR Sheets.");
+      checkPaymentScreen();
+    });
+}
+
+// Yeh check karne ke liye ki custom server URL present hai ya nahi
+function customServerUrlPresent() {
+  return localStorage.getItem("CPL_CUSTOM_SERVER_URL") ? true : false;
+}
+
+function checkPaymentScreen() {
+  if (urlParams.get('screen') === 'payment' || localStorage.getItem("CPL_IN_PAYMENT_SCREEN") === "true") {
+    onProceedClick();
+  }
+}
+
+// Helper function to load MR data locally on startup
+function fetchMRDataLocal() {
+  fetch(`/api/mr-sheets?period=${encodeURIComponent(activePeriod)}`)
+    .then(res => res.json())
+    .then(data => {
+      if (data.mrSheets && data.mrSheets.length > 0) {
+        if (mrSheets.length === 0) {
+          mrSheets = data.mrSheets;
+          currentMRIndex = data.lastIndex || 0;
+          localStorage.setItem(`CPL_OFFLINE_SHEETS_${activePeriod}`, JSON.stringify({ mrSheets: mrSheets, lastIndex: currentMRIndex }));
+        }
+      }
+      checkPaymentScreen();
+    })
+    .catch(err => {
+      console.log("Offline mode active: Using local browser storage data for MR Sheets.");
+      checkPaymentScreen();
+    });
+}
+
+function checkPaymentScreen() {
+  if (urlParams.get('screen') === 'payment' || localStorage.getItem("CPL_IN_PAYMENT_SCREEN") === "true") {
+    onProceedClick();
+  }
+}
+
+    function populateDatalists() {
+      const nameDl = document.getElementById("nameOptions");
+      nameDl.innerHTML = "";
+
+      masterData.forEach(item => {
+        if (item.name) {
+          const optN = document.createElement("option");
+          optN.value = item.name;
+          nameDl.appendChild(optN);
+        }
+      });
+    }
+
+    function onProceedClick() {
+      activePeriod = localStorage.getItem("CPL_GLOBAL_MONTH") || "SEP 2026";
+      localStorage.setItem("CPL_IN_PAYMENT_SCREEN", "true");
+      
+      document.getElementById("screen1").style.display = "none";
+      document.getElementById("screen2").style.display = "flex";
+      renderHeaders();
+
+      if (mrSheets.length === 0) {
+        openMRModal();
+      } else {
+        renderTabs();
+        renderBody();
+      }
+    }
+
+    function goToHome() {
+      localStorage.removeItem("CPL_IN_PAYMENT_SCREEN");
+      document.getElementById("screen2").style.display = "none";
+      document.getElementById("screen1").style.display = "flex";
+    }
+
+    function renderHeaders() {
+      const letterHead = document.getElementById("letterHead");
+      const nameHead = document.getElementById("nameHead");
+
+      let row1 = "";
+      let row2 = "";
+
+      for (let i = 0; i < 24; i++) {
+        const letter = String.fromCharCode(65 + i);
+        const name = masterHeaders[i] || '';
+        const isH = (i === 7);
+
+        row1 += `<th class="${isH ? 'col-h' : ''}">${letter}</th>`;
+        row2 += `<th class="${isH ? 'col-h' : ''}">${name}</th>`;
+      }
+
+      letterHead.innerHTML = row1;
+      nameHead.innerHTML = row2;
+    }
+
+    function openMRModal() {
+      const nextNum = mrSheets.length > 0 ? mrSheets.length + 1 : "";
+      document.getElementById("modalMrNo").value = `MR No. 74 RCC/${nextNum}/ ${activePeriod}`;
+      document.getElementById("modalJobSelect").value = "";
+      document.getElementById("mrModal").style.display = "flex";
+    }
+
+    function closeModal(id) {
+      document.getElementById(id).style.display = "none";
+    }
+
+    function openFeatureModal() {
+      const curMR = mrSheets[currentMRIndex];
+      const lockText = document.getElementById("featureLockText");
+      if (curMR && curMR.isLocked) {
+        lockText.innerText = "🔓 UNLOCK MR";
+      } else {
+        lockText.innerText = "🔒 LOCK MR";
+      }
+      document.getElementById("featureModal").style.display = "flex";
+    }
+
+    function openConnectModal() {
+      document.getElementById("serverUrlInput").value = localStorage.getItem("CPL_CUSTOM_SERVER_URL") || window.location.origin;
+      document.getElementById("connectModal").style.display = "flex";
+    }
+
+    function openConnectModal() {
+  document.getElementById("serverUrlInput").value = localStorage.getItem("CPL_CUSTOM_SERVER_URL") || window.location.origin;
+  document.getElementById("connectModal").style.display = "flex";
+}
+
+// FIX: Connection test aur Main PC se data fetch karne ka logic
+// FIX: Main PC se MR Sheets aur Master Data dono ek sath fetch karne ka logic
+// FIX: Main PC se MR Sheets aur Master Data dono proper tarike se fetch aur load karne ke liye
+// 2. Updated Connect Function (Network error par "Please connect internet" dikhane ke liye)
+function saveAndTestConnection() {
+  let url = document.getElementById("serverUrlInput").value.trim();
+  if (!url) {
+    showAlert("Please enter a valid server URL or IP!", true);
+    return;
+  }
+  
+  if (url.endsWith('/')) {
+    url = url.slice(0, -1);
+  }
+
+  localStorage.setItem("CPL_CUSTOM_SERVER_URL", url);
+  showAlert("Connecting to Main PC...");
+
+  fetch(`${url}/api/master-data`)
+    .then(res => {
+      if (!res.ok) {
+        throw new Error(`Server status: ${res.status}`);
+      }
+      return res.json();
+    })
+    .then(masterRes => {
+      if (masterRes && masterRes.data && masterRes.data.length > 0) {
+        masterData = masterRes.data;
+        masterHeaders = masterRes.headers || [];
+        
+        localStorage.setItem('CPL_OFFLINE_MASTER_DATA', JSON.stringify({ headers: masterHeaders, data: masterData }));
+        localStorage.setItem("CPL_IS_CONNECTED", "true");
+        
+        populateDatalists();
+        
+        const btn = document.getElementById("btnConnectStatus");
+        if (btn) {
+          btn.innerText = "🟢 CONNECTED";
+          btn.style.background = "#27ae60";
+        }
+
+        showAlert("Success! Main PC connected & Data synced.");
+      } else {
+        showAlert("Connected, but master data is empty.", true);
+      }
+      
+      closeModal("connectModal");
+    })
+    .catch(err => {
+      console.error("Connection error details:", err);
+      localStorage.setItem("CPL_IS_CONNECTED", "false");
+      // Ab yahan saaf message aayega
+      showAlert("Please connect internet / network to Main PC!", true);
+      closeModal("connectModal");
+    });
+}
+
+    function confirmAddMR() {
+      const rawInput = document.getElementById("modalMrNo").value.trim() || `MR No. 74 RCC/ / ${activePeriod}`;
+      const jobNo = document.getElementById("modalJobSelect").value || "L-3307/15 (PERMANENT WORKS)";
+
+      let tabLabel = "";
+      const slashMatch = rawInput.match(/\/\s*(\d+)\s*\//);
+      if (slashMatch && slashMatch[1]) {
+        tabLabel = `MR NO. ${slashMatch[1]}`;
+      } else {
+        let cleanText = rawInput.replace(/74\s*RCC/i, '').replace(/\b20\d{2}\b/g, '');
+        const numMatch = cleanText.match(/\d+/);
+        tabLabel = numMatch ? `MR NO. ${numMatch[0]}` : `MR NO. ${mrSheets.length + 1}`;
+      }
+
+      const isDuplicate = mrSheets.some(mr => mr.label.toUpperCase() === tabLabel.toUpperCase());
+      if (isDuplicate) {
+        showAlert(`Error: ${tabLabel} pehle se hi bani hui hai!`, true);
+        return;
+      }
+
+      let formattedTitle = rawInput;
+      if (!formattedTitle.toUpperCase().startsWith("MR NO.")) formattedTitle = `MR No. ${formattedTitle}`;
+      formattedTitle = `${formattedTitle}, JOB No. ${jobNo}`;
+
+      saveStateForHistory();
+      mrSheets.push({ label: tabLabel, title: formattedTitle, isLocked: false, isSubmitted: false, rows: [] });
+      currentMRIndex = mrSheets.length - 1;
+      closeModal("mrModal");
+      
+      localStorage.setItem(`CPL_OFFLINE_SHEETS_${activePeriod}`, JSON.stringify({ mrSheets: mrSheets, lastIndex: currentMRIndex }));
+      
+      renderTabs();
+      renderBody();
+      showAlert("New MR Sheet created & saved locally!");
+    }
+
+    function switchMR(index) {
+      if (index === currentMRIndex) return;
+      currentMRIndex = index;
+      selectedRowIdx = 0;
+      localStorage.setItem("CPL_LAST_ACTIVE_MR_INDEX", index);
+      renderTabs();
+      renderBody();
+    }
+
+    function renderTabs() {
+      const container = document.getElementById("mrTabsContainer");
+      container.innerHTML = "";
+      if (mrSheets.length === 0) return;
+
+      mrSheets.sort((a, b) => {
+        const numA = parseInt(a.label.replace(/\D/g, '')) || 0;
+        const numB = parseInt(b.label.replace(/\D/g, '')) || 0;
+        return numA - numB;
+      });
+
+      mrSheets.forEach((mr, idx) => {
+        const tab = document.createElement("div");
+        tab.className = `btn-mr-tab ${idx === currentMRIndex ? 'active' : ''} ${mr.isSubmitted ? 'submitted' : ''}`;
+        let lockSymbol = mr.isLocked ? " 🔒" : "";
+        let checkSymbol = mr.isSubmitted ? " ✓" : "";
+        tab.innerText = mr.label + checkSymbol + lockSymbol;
+        if (mr.isSubmitted) tab.title = "Submitted / Synced";
+        tab.onclick = () => switchMR(idx);
+        container.appendChild(tab);
+      });
+
+      const currentMR = mrSheets[currentMRIndex];
+      if (currentMR) {
+        let bannerText = currentMR.title;
+        if (currentMR.isLocked) bannerText += " [🔒 LOCKED BY ADMIN]";
+        if (currentMR.isSubmitted) bannerText += " [✓ SUBMITTED]";
+        document.getElementById("mainBanner").innerText = bannerText;
+      }
+
+      applyLockUIRestrictions();
+    }
+
+    function applyLockUIRestrictions() {
+      const currentMR = mrSheets[currentMRIndex];
+      const isCurrentLocked = currentMR && currentMR.isLocked;
+      const restricted = isCurrentLocked && !isAdmin;
+
+      document.getElementById("btnAddMrTab").style.display = "block";
+      document.getElementById("btnEditRow").style.display = restricted ? "none" : "flex";
+    }
+
+    function toggleMRLock() {
+      const curMR = mrSheets[currentMRIndex];
+      if (!curMR) return;
+
+      if (!curMR.isLocked) {
+        curMR.isLocked = true;
+        renderTabs();
+        renderBody();
+        localStorage.setItem(`CPL_OFFLINE_SHEETS_${activePeriod}`, JSON.stringify({ mrSheets: mrSheets, lastIndex: currentMRIndex }));
+        showAlert("MR Sheet Locked!");
+      } else {
+        const pass = prompt("Enter Unlock Password (Restricted to Authorized PC):");
+        if (pass !== "1235") {
+          showAlert("Incorrect Password! Access Denied.", true);
+          return;
+        }
+        curMR.isLocked = false;
+        renderTabs();
+        renderBody();
+        localStorage.setItem(`CPL_OFFLINE_SHEETS_${activePeriod}`, JSON.stringify({ mrSheets: mrSheets, lastIndex: currentMRIndex }));
+        showAlert("MR Sheet Unlocked successfully!");
+      }
+    }
+
+    function deleteCurrentMR() {
+      if (mrSheets.length === 0) {
+        showAlert("No MR Sheet to delete!", true);
+        return;
+      }
+      const targetMR = mrSheets[currentMRIndex];
+      if (targetMR.isLocked && !isAdmin) {
+        const pass = prompt("Contact to Admin for Deleting this MR Sheet:");
+        if (pass !== "1235") {
+          showAlert("Incorrect Password!", true);
+          return;
+        }
+      }
+
+      const conf = confirm(`Are you sure you want to delete ${targetMR.label} (${targetMR.title})?`);
+      if (!conf) return;
+
+      saveStateForHistory();
+      mrSheets.splice(currentMRIndex, 1);
+      if (currentMRIndex >= mrSheets.length) {
+        currentMRIndex = Math.max(0, mrSheets.length - 1);
+      }
+
+      if (mrSheets.length === 0) {
+        document.getElementById("mainBanner").innerText = "PLEASE CREATE / SELECT AN MR SHEET";
+        renderTabs();
+        renderBody();
+        openMRModal();
+      } else {
+        renderTabs();
+        renderBody();
+      }
+      localStorage.setItem(`CPL_OFFLINE_SHEETS_${activePeriod}`, JSON.stringify({ mrSheets: mrSheets, lastIndex: currentMRIndex }));
+      showAlert("MR Sheet deleted successfully!");
+    }
+
+    function onNameSearch(val) {
+      const curMR = mrSheets[currentMRIndex];
+      if (curMR && curMR.isLocked && !isAdmin) {
+        showAlert("This MR sheet is locked!", true);
+        return;
+      }
+      if (mrSheets.length === 0) {
+        showAlert("Please create an MR sheet first!", true);
+        return;
+      }
+      const match = masterData.find(d => d.name.toLowerCase() === val.trim().toLowerCase());
+      if (match) {
+        appendEmployee(match);
+        document.getElementById("nameSearch").value = "";
+      }
+    }
+
+    function appendEmployee(item) {
+      const curRows = mrSheets[currentMRIndex].rows;
+      if (curRows.some(r => r.code === item.code && r.name === item.name)) {
+        showAlert(`Error: ${item.name} pehle se hi is MR sheet mein maujood hai!`, true);
+        return;
+      }
+      
+      saveStateForHistory();
+
+      const rowCopy = [...item.rowData];
+      rowCopy[0] = curRows.length + 1;
+      rowCopy[18] = calculateRateByTrade(rowCopy[2]);
+
+      const days = parseFloat(rowCopy[17]) || 0;
+      const rate = parseFloat(rowCopy[18]) || 0;
+      if (days > 0 && rate > 0) rowCopy[19] = String(days * rate);
+
+      curRows.push({ code: item.code, name: item.name, rowData: rowCopy });
+      selectedRowIdx = curRows.length - 1;
+      
+      mrSheets[currentMRIndex].isSubmitted = false;
+      renderBody();
+
+      localStorage.setItem(`CPL_OFFLINE_SHEETS_${activePeriod}`, JSON.stringify({ mrSheets: mrSheets, lastIndex: currentMRIndex }));
+      showAlert(`Added locally: ${item.name}`);
+    }
+
+    function renderBody() {
+      const tbody = document.getElementById("tableBody");
+      tbody.innerHTML = "";
+      if (mrSheets.length === 0) {
+        updateGrandTotal(0);
+        return;
+      }
+
+      const curRows = mrSheets[currentMRIndex].rows;
+      let grandTotal = 0;
+
+      curRows.forEach((r, idx) => {
+        if (!r.isGrandTotal) {
+          r.rowData[0] = idx + 1;
+          const netAmt = parseFloat(r.rowData[19]) || 0;
+          grandTotal += netAmt;
+        }
+
+        const tr = document.createElement("tr");
+        if (r.isGrandTotal) tr.classList.add("grand-total-row");
+        if (idx === selectedRowIdx) tr.classList.add("selected-row");
+
+        tr.onclick = () => {
+          selectedRowIdx = idx;
+          renderBody();
+        };
+
+        let html = "";
+        if (r.isGrandTotal) {
+          for (let c = 0; c < 17; c++) {
+            const isH = (c === 7);
+            html += `<td class="${isH ? 'col-h' : ''}"></td>`;
+          }
+          html += `<td colspan="2" class="td-merged-gtotal">G/TOTAL</td>`;
+          html += `<td class="td-gtotal-amount">${r.rowData[19] || '0'}</td>`;
+          html += `<td class="td-gtotal-page">${r.rowData[20] || r.rowData[19] || '0'}</td>`;
+          for (let c = 21; c < 24; c++) {
+            html += `<td></td>`;
+          }
+        } else {
+          for (let c = 0; c < 24; c++) {
+            const isNum = (c === 0 || c === 1 || c === 17 || c === 18 || c === 19);
+            const isH = (c === 7);
+            const isPageTotalCol = (c === 20 && r.rowData[20]);
+
+            let cellStyle = "";
+            if (c === 1 && String(r.rowData[c]).trim().toUpperCase() === "NEW") {
+              cellStyle = "color: #c0392b; font-weight: 900;";
+            }
+
+            html += `<td class="${isNum ? 'col-center' : ''} ${isH ? 'col-h' : ''} ${isPageTotalCol ? 'col-page-total' : ''}" style="${cellStyle}" title="${r.rowData[c] || ''}">${r.rowData[c] || ''}</td>`;
+          }
+        }
+
+        tr.innerHTML = html;
+        tbody.appendChild(tr);
+      });
+
+      updateGrandTotal(grandTotal);
+      applyLockUIRestrictions();
+    }
+
+    function updateGrandTotal(amount) {
+      document.getElementById("grandTotalDisplay").innerText = Number(amount).toLocaleString('en-IN');
+    }
+
+    function insertGrandTotalRow() {
+      const curMR = mrSheets[currentMRIndex];
+      if (curMR && curMR.isLocked && !isAdmin) {
+        const pass = prompt("Enter Admin Password to update G/TOTAL on locked MR:");
+        if (pass !== "admin123") {
+          showAlert("Incorrect password!", true);
+          return;
+        }
+      }
+      if (mrSheets.length === 0 || !mrSheets[currentMRIndex].rows.length) {
+        showAlert("Current MR sheet has no rows!", true);
+        return;
+      }
+
+      const curRows = mrSheets[currentMRIndex].rows;
+      let sumAmt = 0;
+      
+      curRows.forEach(r => {
+        if (!r.isGrandTotal) {
+          sumAmt += parseFloat(r.rowData[19]) || 0;
+        }
+      });
+
+      saveStateForHistory();
+
+      const existingIdx = curRows.findIndex(r => r.isGrandTotal);
+      if (existingIdx !== -1) {
+        curRows.splice(existingIdx, 1);
+      }
+
+      const gRowData = new Array(24).fill('');
+      gRowData[17] = "G/TOTAL";
+      gRowData[18] = "";
+      gRowData[19] = String(sumAmt);
+      gRowData[20] = String(sumAmt);
+
+      curRows.push({
+        code: "",
+        name: "G/TOTAL",
+        isGrandTotal: true,
+        rowData: gRowData
+      });
+
+      selectedRowIdx = curRows.length - 1;
+      renderBody();
+      localStorage.setItem(`CPL_OFFLINE_SHEETS_${activePeriod}`, JSON.stringify({ mrSheets: mrSheets, lastIndex: currentMRIndex }));
+      showAlert(`G/TOTAL added successfully! (Rs ${sumAmt.toLocaleString('en-IN')})`);
+    }
+
+    function openPageTotalModal() {
+      const curMR = mrSheets[currentMRIndex];
+      if (curMR && curMR.isLocked && !isAdmin) {
+        showAlert("This MR sheet is locked!", true);
+        return;
+      }
+      if (mrSheets.length === 0 || mrSheets[currentMRIndex].rows.length === 0) {
+        showAlert("Current MR sheet has no rows!", true);
+        return;
+      }
+
+      const curRows = curMR.rows.filter(r => !r.isGrandTotal);
+      let nextStart = 1;
+      
+      for (let i = 0; i < curRows.length; i++) {
+        const pageTotalVal = curRows[i].rowData[20];
+        if (pageTotalVal !== undefined && String(pageTotalVal).trim() !== "") {
+          nextStart = i + 2; 
+        }
+      }
+
+      if (nextStart > curRows.length) {
+        nextStart = 1;
+      }
+
+      let nextEnd = nextStart + 19; 
+      if (nextEnd > curRows.length) {
+        nextEnd = curRows.length; 
+      }
+
+      document.getElementById("pageTotalStart").value = nextStart;
+      document.getElementById("pageTotalEnd").value = nextEnd >= nextStart ? nextEnd : nextStart;
+
+      document.getElementById("pageTotalModal").style.display = "flex";
+    }
+
+    function applyPageTotal() {
+      const startNo = parseInt(document.getElementById("pageTotalStart").value) || 1;
+      const endNo = parseInt(document.getElementById("pageTotalEnd").value) || 20;
+      const curRows = mrSheets[currentMRIndex].rows;
+
+      if (startNo > endNo || startNo < 1) {
+        showAlert("Invalid S/No range!", true);
+        return;
+      }
+
+      let pageSum = 0;
+      for (let i = startNo - 1; i < Math.min(endNo, curRows.length); i++) {
+        if (!curRows[i].isGrandTotal) {
+          pageSum += parseFloat(curRows[i].rowData[19]) || 0;
+        }
+      }
+
+      saveStateForHistory();
+
+      const targetIdx = Math.min(endNo, curRows.length) - 1;
+      if (targetIdx >= 0 && !curRows[targetIdx].isGrandTotal) {
+        curRows[targetIdx].rowData[20] = String(pageSum);
+      }
+
+      closeModal("pageTotalModal");
+      renderBody();
+      localStorage.setItem(`CPL_OFFLINE_SHEETS_${activePeriod}`, JSON.stringify({ mrSheets: mrSheets, lastIndex: currentMRIndex }));
+      showAlert("Page Total calculated and applied!");
+    }
+
+    function openCodeByModal() {
+      const curMR = mrSheets[currentMRIndex];
+      if (curMR && curMR.isLocked && !isAdmin) {
+        showAlert("This MR sheet is locked!", true);
+        return;
+      }
+      if (mrSheets.length === 0) {
+        showAlert("Please create an MR sheet first!", true);
+        return;
+      }
+      document.getElementById("bulkCodeInput").value = "";
+      document.getElementById("codeStartNo").value = "";
+      document.getElementById("bulkNamePreview").innerHTML = "<i>Names & Father's names will appear here as you paste codes...</i>";
+      document.getElementById("codeByModal").style.display = "flex";
+    }
+
+    function previewBulkCodes() {
+      const textarea = document.getElementById("bulkCodeInput");
+      if (!textarea) return;
+
+      const rawText = textarea.value;
+      const codes = rawText.split(/[\n,]+/).map(c => c.trim()).filter(c => c.length > 0);
+      const previewBox = document.getElementById("bulkNamePreview");
+
+      if (!previewBox) return;
+
+      if (codes.length === 0) {
+        previewBox.innerHTML = "<i>Names & Father's names will appear here as you paste codes...</i>";
+        return;
+      }
+
+      const curRows = (mrSheets[currentMRIndex] && mrSheets[currentMRIndex].rows) ? mrSheets[currentMRIndex].rows.filter(r => !r.isGrandTotal) : [];
+      let baseStartNo = curRows.length + 1;
+
+      const startNoInput = document.getElementById("codeStartNo");
+      if (startNoInput && startNoInput.value.trim() !== "") {
+        const parsed = parseInt(startNoInput.value.trim());
+        if (!isNaN(parsed) && parsed > 0) baseStartNo = parsed;
+      }
+
+      let html = "";
+      codes.forEach((code, idx) => {
+        const currentSNo = baseStartNo + idx;
+        const found = masterData.find(d => d.code.toLowerCase() === code.toLowerCase());
+        
+        if (found) {
+          const workerName = found.name || '';
+          const fatherName = found.rowData[5] || '';
+          html += `<div style="height: 19.5px; line-height: 19.5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-size: 11px;"><span style="color:#666; font-weight:bold; display:inline-block; width:22px; text-align:right;">${currentSNo}.</span> &nbsp;<span style="color:#007e33; font-weight:bold; text-transform:uppercase;">${workerName}</span> &nbsp;&nbsp; <span style="color:#444;">${fatherName}</span></div>`;
+        } else {
+          html += `<div style="height: 19.5px; line-height: 19.5px; color:#dc3545; font-weight:bold; font-size: 11px;"><span style="color:#666; display:inline-block; width:22px; text-align:right;">${currentSNo}.</span> &nbsp;[NOT FOUND: ${code}]</div>`;
+        }
+      });
+      previewBox.innerHTML = html;
+    }
+
+    function applyBulkCodes() {
+      const rawText = document.getElementById("bulkCodeInput").value;
+      const codes = rawText.split(/[\n,]+/).map(c => c.trim()).filter(c => c.length > 0);
+      const startNoInput = document.getElementById("codeStartNo").value.trim();
+      const curRows = mrSheets[currentMRIndex].rows;
+
+      let targetIndex = startNoInput !== "" ? parseInt(startNoInput) - 1 : curRows.length;
+      if (isNaN(targetIndex) || targetIndex < 0) targetIndex = curRows.length;
+
+      saveStateForHistory();
+
+      let addedCount = 0;
+
+      codes.forEach(code => {
+        const found = masterData.find(d => d.code.toLowerCase() === code.toLowerCase());
+        if (found) {
+          const rowCopy = [...found.rowData];
+          rowCopy[18] = calculateRateByTrade(rowCopy[2]);
+
+          const days = parseFloat(rowCopy[17]) || 0;
+          const rate = parseFloat(rowCopy[18]) || 0;
+          if (days > 0 && rate > 0) rowCopy[19] = String(days * rate);
+
+          const newObj = { code: found.code, name: found.name, rowData: rowCopy };
+
+          if (targetIndex < curRows.length) {
+            curRows.splice(targetIndex, 0, newObj);
+          } else {
+            curRows.push(newObj);
+          }
+          targetIndex++;
+          addedCount++;
+        }
+      });
+
+      closeModal("codeByModal");
+      renderBody();
+      localStorage.setItem(`CPL_OFFLINE_SHEETS_${activePeriod}`, JSON.stringify({ mrSheets: mrSheets, lastIndex: currentMRIndex }));
+      showAlert(`${addedCount} employee(s) added successfully!`);
+    }
+
+    function openDaysModal() {
+      const curMR = mrSheets[currentMRIndex];
+      if (curMR && curMR.isLocked && !isAdmin) {
+        showAlert("This MR sheet is locked!", true);
+        return;
+      }
+      if (mrSheets.length === 0 || mrSheets[currentMRIndex].rows.length === 0) {
+        showAlert("Current MR sheet has no rows!", true);
+        return;
+      }
+
+      document.getElementById("bulkDaysInput").value = "";
+
+      const curRows = curMR.rows.filter(r => !r.isGrandTotal);
+      let nextStart = 1;
+      
+      const lastSavedEnd = localStorage.getItem(`CPL_LAST_DAYS_END_${currentMRIndex}`);
+      if (lastSavedEnd !== null && !isNaN(parseInt(lastSavedEnd))) {
+        nextStart = parseInt(lastSavedEnd) + 1;
+      } else {
+        for (let i = 0; i < curRows.length; i++) {
+          const dayVal = curRows[i].rowData[17];
+          if (dayVal === undefined || String(dayVal).trim() === "") {
+            nextStart = i + 1;
+            break;
+          }
+          if (i === curRows.length - 1) {
+            nextStart = curRows.length + 1;
+          }
+        }
+      }
+
+      if (nextStart > curRows.length) {
+        nextStart = 1;
+      }
+
+      let nextEnd = nextStart + 19; 
+      if (nextEnd > curRows.length) {
+        nextEnd = curRows.length;
+      }
+
+      document.getElementById("daysStartNo").value = nextStart;
+      document.getElementById("daysEndNo").value = nextEnd >= nextStart ? nextEnd : nextStart;
+
+      document.getElementById("daysModal").style.display = "flex";
+      updateDaysHelper();
+      previewBulkDays();
+    }
+
+    function updateDaysHelper() {
+      const startNo = document.getElementById("daysStartNo").value || 1;
+      const endNo = document.getElementById("daysEndNo").value || 20;
+      const helper = document.getElementById("daysRangeHelper");
+      if (helper) {
+        helper.innerText = `Target: S/No ${startNo} to ${endNo}`;
+      }
+    }
+
+    function previewBulkDays() {
+      const startNo = parseInt(document.getElementById("daysStartNo").value) || 1;
+      const rawText = document.getElementById("bulkDaysInput").value;
+      const daysList = rawText.split(/[\n,]+/).map(d => d.trim()).filter(d => d.length > 0);
+      const snoBox = document.getElementById("daysSNoList");
+      
+      if (!snoBox) return;
+
+      let count = Math.max(daysList.length, 1);
+      let html = "";
+      for (let i = 0; i < count; i++) {
+        html += `<div style="height: 19.5px; line-height: 19.5px;">${startNo + i}.</div>`;
+      }
+      snoBox.innerHTML = html;
+    }
+
+    function applyBulkDays() {
+      const startNo = parseInt(document.getElementById("daysStartNo").value) || 1;
+      const endNo = parseInt(document.getElementById("daysEndNo").value) || 20;
+      const rawText = document.getElementById("bulkDaysInput").value;
+      const daysList = rawText.split(/[\n,]+/).map(d => d.trim()).filter(d => d.length > 0);
+      
+      const curRowsData = mrSheets[currentMRIndex].rows;
+
+      if (daysList.length === 0) {
+        showAlert("Please paste at least one day entry!", true);
+        return;
+      }
+      if (startNo > endNo || startNo < 1) {
+        showAlert("Invalid S/No range!", true);
+        return;
+      }
+
+      saveStateForHistory();
+
+      let listIdx = 0;
+      let appliedCount = 0;
+      let actualLastAppliedRow = startNo;
+
+      for (let i = startNo - 1; i < Math.min(endNo, curRowsData.length); i++) {
+        if (!curRowsData[i].isGrandTotal && listIdx < daysList.length) {
+          const daysVal = daysList[listIdx++];
+          curRowsData[i].rowData[17] = daysVal;
+          if (!curRowsData[i].rowData[18]) curRowsData[i].rowData[18] = calculateRateByTrade(curRowsData[i].rowData[2]);
+          const rateVal = parseFloat(curRowsData[i].rowData[18]) || 0;
+          
+          if (daysVal === "" || daysVal === null) {
+            curRowsData[i].rowData[19] = "0";
+          } else {
+            const daysNum = parseFloat(daysVal) || 0;
+            curRowsData[i].rowData[19] = String(daysNum * rateVal);
+          }
+          appliedCount++;
+          actualLastAppliedRow = i + 1; 
+        }
+      }
+
+      localStorage.setItem(`CPL_LAST_DAYS_END_${currentMRIndex}`, actualLastAppliedRow);
+
+      closeModal("daysModal");
+      renderBody();
+      localStorage.setItem(`CPL_OFFLINE_SHEETS_${activePeriod}`, JSON.stringify({ mrSheets: mrSheets, lastIndex: currentMRIndex }));
+      showAlert(`Working days applied successfully! (S/No ${startNo} to ${actualLastAppliedRow})`);
+    }
+
+    // SAVE LOCAL FUNCTION (Browser local storage backup ke liye)
+function saveToLocal(silent = false) {
+  localStorage.setItem(`CPL_OFFLINE_SHEETS_${activePeriod}`, JSON.stringify({ mrSheets: mrSheets, lastIndex: currentMRIndex }));
+  if (!silent) {
+    showAlert(`Data saved locally in browser for ${activePeriod}!`);
+  }
+}
+
+// SUBMIT FUNCTION (Server Sync & Green Tick Marking with Network Check)
+function submitToSever() {
+  const customUrl = localStorage.getItem("CPL_CUSTOM_SERVER_URL") || '';
+  const baseApiUrl = customUrl ? customUrl.replace(/\/$/, '') : '';
+
+  showAlert("Syncing with Main PC...");
+
+  fetch(`${baseApiUrl}/api/mr-sheets`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ mrSheets: mrSheets, lastIndex: currentMRIndex, period: activePeriod })
+  })
+  .then(res => {
+    if (!res.ok) {
+      throw new Error("Server response not ok");
+    }
+    return res.json();
+  })
+  .then(() => {
+    // Jab server par successfully data chala jaye tabhi green tick lagega
+    if (mrSheets[currentMRIndex]) {
+      mrSheets[currentMRIndex].isSubmitted = true;
+    }
+
+    localStorage.setItem(`CPL_OFFLINE_SHEETS_${activePeriod}`, JSON.stringify({ mrSheets: mrSheets, lastIndex: currentMRIndex }));
+
+    // Server se latest data fetch karke merge karna
+    return fetch(`${baseApiUrl}/api/mr-sheets?period=${encodeURIComponent(activePeriod)}`);
+  })
+  .then(res => res.json())
+  .then(data => {
+    if (data.mrSheets) {
+      const serverSheets = data.mrSheets || [];
+      let mergedMap = new Map();
+      serverSheets.forEach(s => mergedMap.set(s.label.toUpperCase(), s));
+      mrSheets.forEach(l => mergedMap.set(l.label.toUpperCase(), l));
+      mrSheets = Array.from(mergedMap.values());
+      localStorage.setItem(`CPL_OFFLINE_SHEETS_${activePeriod}`, JSON.stringify({ mrSheets: mrSheets, lastIndex: currentMRIndex }));
+    }
+    renderTabs();
+    showAlert(`Submitted & Synced to Server successfully for ${activePeriod}! ✓`);
+  })
+  .catch(err => {
+    console.error("Server offline sync error:", err);
+    // Agar network ya server connect nahi hai, toh tick nahi lagega aur clear message aayega
+    if (mrSheets[currentMRIndex]) {
+      mrSheets[currentMRIndex].isSubmitted = false;
+    }
+    localStorage.setItem(`CPL_OFFLINE_SHEETS_${activePeriod}`, JSON.stringify({ mrSheets: mrSheets, lastIndex: currentMRIndex }));
+    renderTabs();
+    showAlert("Please connect network! Main PC server se connection nahi ho pa raha hai.", true);
+  });
+}
+
+    function openEditModal() {
+      const curMR = mrSheets[currentMRIndex];
+      if (curMR && curMR.isLocked && !isAdmin) {
+        const pass = prompt("Enter Admin Password to edit locked MR:");
+        if (pass !== "admin123") {
+          showAlert("Incorrect password!", true);
+          return;
+        }
+      }
+      const curRows = curMR?.rows;
+      if (!curRows || curRows.length === 0) {
+        showAlert("Please add at least one row first!", true);
+        return;
+      }
+
+      const row = curRows[selectedRowIdx];
+
+      document.getElementById("editModalTitle").innerText = row.isGrandTotal ? `EDIT G/TOTAL SUMMARY ROW` : `EDIT EMPLOYEE RECORD - ${row.name || 'EMPLOYEE'} (S/No: ${selectedRowIdx + 1})`;
+      const grid = document.getElementById("editFormFields");
+      grid.innerHTML = "";
+
+      const tradeOptions = [
+        "MAZ", "MATE", "SKD-III", "SKD-II", "SKD-I", "CPDVR",
+        "MAZ/MATE", "MAZ/SKD-III", "MAZ/SKD-II", "MAZ/SKD-I", "MAZ/CPDVR",
+        "MATE/MAZ", "MATE/SKD-III", "MATE/SKD-II", "MATE/SKD-I", "MATE/CPDVR",
+        "SKD-III/MAZ", "SKD-III/MATE", "SKD-III/SKD-II", "SKD-III/SKD-I", "SKD-III/CPDVR",
+        "SKD-II/MAZ", "SKD-II/MATE", "SKD-II/SKD-III", "SKD-II/SKD-I", "SKD-II/CPDVR",
+        "SKD-I/MAZ", "SKD-I/MATE", "SKD-I/SKD-III", "SKD-I/SKD-II", "SKD-I/CPDVR",
+        "CPDVR/MAZ", "CPDVR/MATE", "CPDVR/SKD-III", "CPDVR/SKD-II", "CPDVR/SKD-I"
+      ];
+
+      for (let i = 0; i < 24; i++) {
+        const colLetter = String.fromCharCode(65 + i);
+        const colTitle = masterHeaders[i] || `Column ${colLetter}`;
+        const val = row.rowData[i] || '';
+
+        const div = document.createElement("div");
+        div.className = "form-group";
+        if (i === 7) div.style.gridColumn = "span 2";
+
+        if (i === 2) {
+          let optionsHtml = `<option value="">-- Select Trade --</option>`;
+          tradeOptions.forEach(t => {
+            optionsHtml += `<option value="${t}" ${val === t ? 'selected' : ''}>${t}</option>`;
+          });
+
+          div.innerHTML = `
+            <label><strong>${colLetter}:</strong> ${colTitle}</label>
+            <select id="editField_${i}" style="padding:5px 8px; font-size:12px; border:1px solid #ccc; border-radius:4px; height:30px; background:#fff;" onchange="onEditTradeChange(this.value)">
+              ${optionsHtml}
+            </select>
+          `;
+        } else {
+          div.innerHTML = `
+            <label><strong>${colLetter}:</strong> ${colTitle}</label>
+            ${i === 7 
+              ? `<textarea id="editField_${i}">${val}</textarea>` 
+              : `<input type="text" id="editField_${i}" value="${val}">`}
+          `;
+        }
+        grid.appendChild(div);
+      }
+
+      document.getElementById("editModal").style.display = "flex";
+    }
+
+    function onEditTradeChange(selectedTrade) {
+      const rateInput = document.getElementById("editField_18");
+      if (rateInput) {
+        rateInput.value = calculateRateByTrade(selectedTrade);
+      }
+    }
+
+    function saveEditedData() {
+      const curRows = mrSheets[currentMRIndex].rows;
+      const row = curRows[selectedRowIdx];
+
+      saveStateForHistory();
+
+      for (let i = 0; i < 24; i++) {
+        const input = document.getElementById(`editField_${i}`);
+        if (input) row.rowData[i] = input.value.trim();
+      }
+
+      row.code = row.rowData[1];
+      row.name = row.rowData[3];
+      row.rowData[18] = calculateRateByTrade(row.rowData[2]);
+      
+      const daysVal = row.rowData[17];
+      const rateNum = parseFloat(row.rowData[18]) || 0;
+      
+      if (daysVal === "" || daysVal === null) {
+        row.rowData[19] = "0";
+      } else {
+        const daysNum = parseFloat(daysVal);
+        if (!isNaN(daysNum) && rateNum > 0) {
+          row.rowData[19] = String(daysNum * rateNum);
+        } else {
+          row.rowData[19] = "0";
+        }
+      }
+
+      closeModal("editModal");
+      renderBody();
+      localStorage.setItem(`CPL_OFFLINE_SHEETS_${activePeriod}`, JSON.stringify({ mrSheets: mrSheets, lastIndex: currentMRIndex }));
+      showAlert("Record updated successfully!");
+    }
+
+    function deleteCurrentRow() {
+      const curMR = mrSheets[currentMRIndex];
+      if (curMR && curMR.isLocked && !isAdmin) {
+        const pass = prompt("Enter Admin Password to delete row on locked MR:");
+        if (pass !== "admin123") {
+          showAlert("Incorrect password!", true);
+          return;
+        }
+      }
+      const curRows = curMR.rows;
+      if (!curRows || curRows.length === 0) return;
+
+      const targetEmp = curRows[selectedRowIdx];
+      const conf = confirm(`Delete ${targetEmp.isGrandTotal ? 'G/TOTAL summary row' : 'employee: ' + (targetEmp.name || 'Row')}?`);
+      if (!conf) return;
+
+      saveStateForHistory();
+
+      curRows.splice(selectedRowIdx, 1);
+      if (selectedRowIdx >= curRows.length) selectedRowIdx = Math.max(0, curRows.length - 1);
+
+      closeModal("editModal");
+      renderBody();
+      localStorage.setItem(`CPL_OFFLINE_SHEETS_${activePeriod}`, JSON.stringify({ mrSheets: mrSheets, lastIndex: currentMRIndex }));
+      showAlert("Row deleted successfully!");
+    }
+
+    function exportSingleExcel() {
+      const curMR = mrSheets[currentMRIndex];
+      if (!curMR || curMR.rows.length === 0) {
+        showAlert("Current MR sheet is empty!", true);
+        return;
+      }
+
+      const wsData = [
+        [curMR.title],
+        masterHeaders.slice(0, 24)
+      ];
+
+      const merges = [{ s: { r: 0, c: 0 }, e: { r: 0, c: 23 } }];
+
+      curMR.rows.forEach(r => {
+        wsData.push(r.rowData);
+        if (r.isGrandTotal) {
+          const rowIdx = wsData.length - 1;
+          merges.push({ s: { r: rowIdx, c: 17 }, e: { r: rowIdx, c: 18 } });
+        }
+      });
+
+      const wb = XLSX.utils.book_new();
+      const ws = XLSX.utils.aoa_to_sheet(wsData);
+
+      let gtotalExcelRow = -1;
+
+      for (let r = 1; r < wsData.length; r++) {
+        const isHeader = (r === 1);
+        const rowDataCheck = wsData[r];
+        const isTotal = rowDataCheck && rowDataCheck[17] === "G/TOTAL";
+        if (isTotal) gtotalExcelRow = r + 1;
+
+        for (let c = 0; c < 24; c++) {
+          const cellRef = XLSX.utils.encode_cell({ r: r, c: c });
+          if (!ws[cellRef]) ws[cellRef] = { t: 's', v: '' };
+
+          if (!isHeader && !isTotal) {
+            const excelRow = r + 1;
+            
+            if (c === 18) {
+              ws[cellRef] = {
+                t: 'n',
+                f: `IF(RIGHT(C${excelRow},3)="MAZ",550,IF(RIGHT(C${excelRow},4)="MATE",570,IF(RIGHT(C${excelRow},7)="SKD-III",640,IF(RIGHT(C${excelRow},6)="SKD-II",770,IF(RIGHT(C${excelRow},5)="SKD-I",900,IF(RIGHT(C${excelRow},5)="CPDVR",770,""))))))`,
+                v: parseFloat(rowDataCheck[18]) || 0
+              };
+            } else if (c === 19) {
+              ws[cellRef] = {
+                t: 'n',
+                f: `R${excelRow}*S${excelRow}`,
+                v: parseFloat(rowDataCheck[19]) || 0
+              };
+            }
+          }
+
+          if (isTotal && c === 19 && gtotalExcelRow !== -1) {
+            ws[cellRef] = {
+              t: 'n',
+              f: `SUM(T2:T${gtotalExcelRow - 1})`,
+              v: parseFloat(rowDataCheck[19]) || 0
+            };
+          }
+
+          ws[cellRef].s = {
+            border: borderStyleThin,
+            font: {
+              name: "Arial",
+              sz: isHeader ? 10 : 9.5,
+              bold: isHeader || isTotal
+            },
+            alignment: {
+              vertical: "center",
+              horizontal: (c === 0 || c === 1 || c === 17 || c === 18 || c === 19 || c === 20) ? "center" : "left"
+            },
+            fill: isHeader ? { fgColor: { rgb: "F2F2F2" } } : (isTotal ? { fgColor: { rgb: "FFF2CC" } } : undefined)
+          };
+        }
+      }
+
+      ws['!cols'] = [
+        { wch: 6 }, { wch: 8 }, { wch: 8 }, { wch: 26 }, { wch: 13 }, { wch: 26 }, { wch: 9 }, { wch: 38 }, { wch: 16 },
+        { wch: 10 }, { wch: 10 }, { wch: 12 }, { wch: 16 }, { wch: 12 }, { wch: 16 }, { wch: 16 }, { wch: 12 },
+        { wch: 10 }, { wch: 10 }, { wch: 12 }, { wch: 14 }
+      ];
+
+      if (merges.length > 0) ws['!merges'] = merges;
+
+      const sheetName = curMR.label.replace(/[\/\\?*:[\]]/g, '_').substring(0, 31);
+      XLSX.utils.book_append_sheet(wb, ws, sheetName);
+      XLSX.writeFile(wb, `${sheetName}_PAYMENT.xlsx`);
+      showAlert("Excel exported successfully!");
+    }
+
+    function exportAllWorkbook() {
+      if (mrSheets.length === 0) {
+        showAlert("No MR sheets available to export!", true);
+        return;
+      }
+
+      const wb = XLSX.utils.book_new();
+      let usedSheetNames = new Set();
+      let letterMRRows = [];
+      const preparedMRSheets = [];
+
+      mrSheets.forEach((mr, idx) => {
+        if (mr.rows && mr.rows.length > 0) {
+          let baseName = mr.label.replace(/[\/\\?*:[\]]/g, '_').trim().substring(0, 28) || `MR_${idx+1}`;
+          let uniqueName = baseName;
+          let counter = 1;
+          while (usedSheetNames.has(uniqueName.toUpperCase())) {
+            uniqueName = `${baseName.substring(0, 25)}_${counter++}`;
+          }
+          usedSheetNames.add(uniqueName.toUpperCase());
+
+          const wsData = [
+            [mr.title],
+            masterHeaders.slice(0, 24)
+          ];
+
+          const merges = [{ s: { r: 0, c: 0 }, e: { r: 0, c: 23 } }];
+          let gtotalRowIdx = -1;
+          let totalSum = 0;
+
+          mr.rows.forEach(r => {
+            wsData.push(r.rowData);
+            if (r.isGrandTotal) {
+              gtotalRowIdx = wsData.length - 1;
+              merges.push({ s: { r: gtotalRowIdx, c: 17 }, e: { r: gtotalRowIdx, c: 18 } });
+              totalSum = parseFloat(r.rowData[19]) || totalSum;
+            } else {
+              totalSum += parseFloat(r.rowData[19]) || 0;
+            }
+          });
+
+          const excelRowNumber = (gtotalRowIdx !== -1) ? (gtotalRowIdx + 1) : wsData.length;
+          const ws = XLSX.utils.aoa_to_sheet(wsData);
+
+          let gtotalExcelRow = -1;
+
+          for (let r = 1; r < wsData.length; r++) {
+            const isHeader = (r === 1);
+            const rowDataCheck = wsData[r];
+            const isTotal = (r === gtotalRowIdx);
+            if (isTotal) gtotalExcelRow = r + 1;
+
+            for (let c = 0; c < 24; c++) {
+              const cellRef = XLSX.utils.encode_cell({ r: r, c: c });
+              if (!ws[cellRef]) ws[cellRef] = { t: 's', v: '' };
+
+              if (!isHeader && !isTotal) {
+                const excelRow = r + 1;
+                
+                if (c === 18) {
+                  ws[cellRef] = {
+                    t: 'n',
+                    f: `IF(RIGHT(C${excelRow},3)="MAZ",550,IF(RIGHT(C${excelRow},4)="MATE",570,IF(RIGHT(C${excelRow},7)="SKD-III",640,IF(RIGHT(C${excelRow},6)="SKD-II",770,IF(RIGHT(C${excelRow},5)="SKD-I",900,IF(RIGHT(C${excelRow},5)="CPDVR",770,""))))))`,
+                    v: parseFloat(rowDataCheck[18]) || 0
+                  };
+                } else if (c === 19) {
+                  ws[cellRef] = {
+                    t: 'n',
+                    f: `R${excelRow}*S${excelRow}`,
+                    v: parseFloat(rowDataCheck[19]) || 0
+                  };
+                }
+              }
+
+              if (isTotal && c === 19 && gtotalExcelRow !== -1) {
+                ws[cellRef] = {
+                  t: 'n',
+                  f: `SUM(T2:T${gtotalExcelRow - 1})`,
+                  v: parseFloat(rowDataCheck[19]) || 0
+                };
+              }
+
+              ws[cellRef].s = {
+                border: borderStyleThin,
+                font: {
+                  name: "Arial",
+                  sz: isHeader ? 10 : 9.5,
+                  bold: isHeader || isTotal
+                },
+                alignment: {
+                  vertical: "center",
+                  horizontal: (c === 0 || c === 1 || c === 17 || c === 18 || c === 19 || c === 20) ? "center" : "left"
+                },
+                fill: isHeader ? { fgColor: { rgb: "F2F2F2" } } : (isTotal ? { fgColor: { rgb: "FFF2CC" } } : undefined)
+              };
+            }
+          }
+
+          ws['!cols'] = [
+            { wch: 6 }, { wch: 8 }, { wch: 8 }, { wch: 26 }, { wch: 13 }, { wch: 26 }, { wch: 9 }, { wch: 38 }, { wch: 16 },
+            { wch: 10 }, { wch: 10 }, { wch: 12 }, { wch: 16 }, { wch: 12 }, { wch: 16 }, { wch: 16 }, { wch: 12 },
+            { wch: 10 }, { wch: 10 }, { wch: 12 }, { wch: 14 }
+          ];
+          if (merges.length > 0) ws['!merges'] = merges;
+
+          preparedMRSheets.push({ name: uniqueName, ws: ws });
+
+          let jobClean = mr.title || '';
+          const jobMatch = jobClean.match(/JOB\s*No\.?\s*(.*)/i);
+          if (jobMatch && jobMatch[1]) jobClean = jobMatch[1].trim();
+
+          let numMatch = mr.label.match(/\d+/);
+          let mrFormatted = numMatch ? `74 RCC/${numMatch[0]}/${activePeriod}` : mr.label;
+
+          letterMRRows.push({
+            tabName: uniqueName,
+            targetCell: `T${excelRowNumber}`,
+            mrNo: mrFormatted,
+            jobNo: jobClean,
+            amount: totalSum
+          });
+        }
+      });
+
+      if (preparedMRSheets.length === 0) {
+        showAlert("All MR sheets are empty!", true);
+        return;
+      }
+
+      let savedLetter = {};
+      try { savedLetter = JSON.parse(localStorage.getItem(`CPL_SAVED_LETTER_DATA_${activePeriod}`)) || {}; } catch(e){}
+
+      let grandTotalSum = 0;
+      letterMRRows.forEach(r => grandTotalSum += r.amount);
+
+      const letterData = [
+        ["", "", "", "", "HQ 74 RCC (GREF)"],
+        ["", "", "", "", "Pin - 930 074"],
+        ["", "", "", "", "C/o 99 APO"],
+        [],
+        [`2014-B/CPL/    ${savedLetter.refNo || ''}    /E2`, "", "", "", savedLetter.letterDate || activePeriod],
+        [],
+        ["AO 24 BRTF (Through E5 Section)"],
+        ["Pin - 930024"],
+        ["C/O 99 APO"],
+        [],
+        [`FORWARDING OF BILLS ON ACCOUNT OF WAGES OF CPL's FOR THE MONTH OF ${activePeriod}`],
+        [`(PERIOD FOR ${activePeriod})`],
+        [],
+        ["1.   The under mentioned Special Wages Bills on account of wages alongwith Mandate form, DLRs and Part-II orders of CPLs are forwarded herewith for your pre-audit and early payment, please."],
+        [],
+        ["S/No", "Mr No", "Job No.", "Amount (Rs)", "REMARKS"]
+      ];
+
+      const startRowExcel = 17;
+
+      letterMRRows.forEach((r, idx) => {
+        letterData.push([
+          idx + 1,
+          r.mrNo,
+          r.jobNo,
+          r.amount,
+          ""
+        ]);
+      });
+
+      const totalRowExcel = startRowExcel + letterMRRows.length;
+
+      letterData.push([
+        "",
+        "",
+        "TOTAL (Rs)",
+        grandTotalSum,
+        ""
+      ]);
+      letterData.push([]);
+      letterData.push([numberToIndianWords(grandTotalSum)]);
+      letterData.push([]);
+      letterData.push([`(TOTAL CLOSED MR ${numberToWordSimple(letterMRRows.length)} NOS)`]);
+      letterData.push([]);
+      letterData.push(["Copy to:-", "", "", "", "(Sujit Debnath)"]);
+      letterData.push(["HQ 24 BRTF", "FOR INFO PLEASE", "", "", "EE (Civ)"]);
+      letterData.push(["C/O 99 APO", "", "", "", "Officer Commanding"]);
+      letterData.push(["Pin: 930 024", "", "", "", "74 RCC (GREF)"]);
+
+      const wsLetter = XLSX.utils.aoa_to_sheet(letterData);
+
+      const tableStartRow0 = 15;
+      const tableEndRow0 = totalRowExcel - 1;
+
+      for (let R = tableStartRow0; R <= tableEndRow0; R++) {
+        for (let C = 0; C <= 4; C++) {
+          const cellRef = XLSX.utils.encode_cell({ r: R, c: C });
+          if (!wsLetter[cellRef]) wsLetter[cellRef] = { t: 's', v: '' };
+
+          const isHead = (R === tableStartRow0);
+          const isTot = (R === tableEndRow0);
+
+          wsLetter[cellRef].s = {
+            border: borderStyleThin,
+            font: {
+              name: "Arial",
+              sz: 10,
+              bold: isHead || isTot
+            },
+            alignment: {
+              vertical: "center",
+              horizontal: (C === 0 || C === 1 || C === 4) ? "center" : (C === 3 ? "right" : "left")
+            },
+            fill: isHead ? { fgColor: { rgb: "F2F2F2" } } : undefined
+          };
+        }
+      }
+
+      letterMRRows.forEach((r, idx) => {
+        const rowNum = startRowExcel + idx;
+        const cellRef = `D${rowNum}`;
+        const tabSafe = r.tabName.replace(/'/g, "''");
+
+        wsLetter[cellRef] = {
+          t: 'n',
+          f: `'${tabSafe}'!${r.targetCell}`,
+          v: Number(r.amount || 0),
+          z: '#,##0.00',
+          s: {
+            border: borderStyleThin,
+            font: { name: "Arial", sz: 10, bold: true },
+            alignment: { vertical: "center", horizontal: "right" }
+          }
+        };
+      });
+
+      const grandTotalCellRef = `D${totalRowExcel}`;
+      wsLetter[grandTotalCellRef] = {
+        t: 'n',
+        f: `SUM(D${startRowExcel}:D${totalRowExcel - 1})`,
+        v: Number(grandTotalSum),
+        z: '#,##0.00',
+        s: {
+          border: borderStyleThin,
+          font: { name: "Arial", sz: 10, bold: true },
+          alignment: { vertical: "center", horizontal: "right" }
+        }
+      };
+
+      wsLetter['!cols'] = [
+        { wch: 6 }, { wch: 24 }, { wch: 45 }, { wch: 18 }, { wch: 18 }
+      ];
+
+      XLSX.utils.book_append_sheet(wb, wsLetter, "FORWARDING_LETTER");
+
+      preparedMRSheets.forEach(item => {
+        XLSX.utils.book_append_sheet(wb, item.ws, item.name);
+      });
+
+      XLSX.writeFile(wb, `ALL_MR_WITH_FORWARDING_LETTER_${activePeriod.replace(/[^a-zA-Z0-9]/g, '_')}.xlsx`);
+      showAlert("All MRs & Forwarding Letter exported!");
+    }
+
+    function insertBlankRowBelow() {
+      const curMR = mrSheets[currentMRIndex];
+      if (curMR && curMR.isLocked && !isAdmin) {
+        const pass = prompt("Enter Admin Password to insert row on locked MR:");
+        if (pass !== "admin123") {
+          showAlert("Incorrect password!", true);
+          return;
+        }
+      }
+
+      saveStateForHistory();
+
+      const curRows = curMR.rows;
+      const blankRowData = new Array(24).fill("");
+      
+      curRows.splice(selectedRowIdx + 1, 0, {
+        code: "",
+        name: "",
+        rowData: blankRowData
+      });
+
+      selectedRowIdx++;
+      closeModal("editModal");
+      renderBody();
+      localStorage.setItem(`CPL_OFFLINE_SHEETS_${activePeriod}`, JSON.stringify({ mrSheets: mrSheets, lastIndex: currentMRIndex }));
+      showAlert("Blank row inserted!");
+    }
+  </script>
+</body>
+</html>
